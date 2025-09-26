@@ -1,0 +1,196 @@
+{% extends 'users/index.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="pagetitle">
+    <h1>Process Document : {{ file.filename }}</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Home</a></li>
+        </ol>
+    </nav>
+</div><!-- End Page Title -->
+
+<section class="section">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="card-title">Document: {{ file.filename }}</h5>
+                    </div>
+                </div>
+
+                {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-primary alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+                {% endif %}
+
+                <div class="card-body">
+                    <div class="mt-3">
+                        <p id="status-label" class="alert alert-info">Welcome! Please select an image or directory.</p>
+                    </div>
+                    <!-- Image Display Section -->
+                    <div class="row">
+                        <!-- Image Section directly -->
+                        <div class="col-8">
+                            <img id="image" src="" alt="Image to crop" style="width: 100%; height: 50%; display: block;">
+                        </div>
+
+                        <!-- Controls Section -->
+                        <div class="col-4">
+                            <h5 class="mb-3">Controls</h5>
+                            <div class="d-flex flex-column">
+                                <button class="btn btn-primary mb-2" onclick="showPrevPage()">Previous Page</button>
+                                <button class="btn btn-success mb-2" onclick="saveCroppedImage()">Save Cropped Image</button>
+                                <button class="btn btn-secondary mb-2" onclick="rotateImage(-90)">Rotate Left 90°</button>
+                                <button class="btn btn-secondary mb-2" onclick="rotateImage(90)">Rotate Right 90°</button>
+                                <button class="btn btn-secondary mb-2" onclick="zoomImage(0.1)">Zoom In</button>
+                                <button class="btn btn-secondary mb-2" onclick="zoomImage(-0.1)">Zoom Out</button>
+                                <button class="btn btn-info mb-2" onclick="resetCropper()">Reset</button>
+                                <button class="btn btn-primary mt-2" onclick="showNextPage()">Next Page</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Status Label -->
+
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Cropper.js CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
+<!-- Cropper.js Script -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+
+<script>
+    const pages = {{ pages|safe }}; // Base64 strings of pages passed from the backend
+const imageElement = document.getElementById('image');
+let cropper;
+let currentPageIndex = 0;
+
+// Load and display an image
+function showPage(index) {
+    imageElement.src = `data:image/png;base64,${pages[index]}`;
+    imageElement.onload = () => {
+        if (cropper) cropper.destroy();
+        cropper = new Cropper(imageElement, {
+            aspectRatio: NaN, // Allow free aspect ratio
+            viewMode: 1, // Restrict the cropping box to not go outside the container
+            responsive: true,
+            background: false,
+            autoCropArea: 1, // Ensure the image is fully covered by the crop box
+            zoomable: true,
+        });
+    };
+    updateStatus(`Page ${index + 1} of ${pages.length}`);
+}
+
+function showPrevPage() {
+    if (currentPageIndex > 0) {
+        currentPageIndex--;
+        showPage(currentPageIndex);
+    }
+}
+
+function showNextPage() {
+    if (currentPageIndex < pages.length - 1) {
+        currentPageIndex++;
+        showPage(currentPageIndex);
+    }
+}
+
+function saveCroppedImage() {
+    if (cropper) {
+        const croppedCanvas = cropper.getCroppedCanvas();
+        const croppedImage = croppedCanvas.toDataURL('image/png');
+
+        updateStatus('Cropped image saved successfully!');
+        // Optionally, send the cropped image to the backend
+        /*
+        fetch('/save-cropped-image/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ image: croppedImage }),
+        }).then(response => {
+            if (response.ok) {
+                updateStatus('Cropped image saved successfully!');
+            }
+        });
+        */
+        
+        // After saving, move to the next page
+        showNextPage();
+    }
+}
+
+function rotateImage(angle) {
+    if (cropper) {
+        cropper.rotate(angle); // Rotate the image by the specified angle
+
+        // After rotation, update the image size and reinitialize the cropper
+        const croppedCanvas = cropper.getCroppedCanvas();
+        const croppedImage = croppedCanvas.toDataURL('image/png');
+
+        // Replace the image source with the rotated one
+        imageElement.src = croppedImage;
+
+        // Re-initialize the cropper with the new image source
+        cropper.replace(croppedImage);
+
+        resizeAfterRotation(); // Resize the image and update cropper
+    }
+}
+
+
+function resizeAfterRotation() {
+    const imageWidth = imageElement.naturalWidth;
+    const imageHeight = imageElement.naturalHeight;
+    const maxWidth = 700;  // Maximum width after resizing
+    const maxHeight = 600; // Maximum height after resizing
+    
+    // Scale the image to fit within maxWidth and maxHeight
+    const scale = Math.min(maxWidth / imageWidth, maxHeight / imageHeight, 1);
+    const newWidth = Math.floor(imageWidth * scale);
+    const newHeight = Math.floor(imageHeight * scale);
+    
+    // Update the image element size
+    imageElement.style.width = `${newWidth}px`;
+    imageElement.style.height = `${newHeight}px`;
+    
+    // Reinitialize the cropper with the updated image size
+    cropper.replace(imageElement.src);
+    
+    // Optionally, you can update status or other UI elements to reflect this update
+    updateStatus(`Image rotated and resized to ${newWidth}x${newHeight}`);
+}
+
+
+function zoomImage(delta) {
+    if (cropper) cropper.zoom(delta);
+}
+
+function resetCropper() {
+    if (cropper) cropper.reset();
+    updateStatus('Cropper reset!');
+}
+
+function updateStatus(message) {
+    document.getElementById('status-label').textContent = message;
+}
+
+// Load the first page on page load
+if (pages.length > 0) {
+    showPage(currentPageIndex);
+}
+</script>
+
+{% endblock content %}

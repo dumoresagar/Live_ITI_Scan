@@ -1,0 +1,361 @@
+{% extends 'users/index.html' %}
+{% load static %}
+
+{% block content %}
+    <div class="pagetitle">
+        <h1>Create User Profile</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                <li class="breadcrumb-item">Users</li>
+                <li class="breadcrumb-item active">Create</li>
+            </ol>
+        </nav>
+    </div><!-- End Page Title -->
+
+    <section class="section">
+        <div class="card">
+            
+            <div class="card-body">
+                <h5 class="card-title">Create User</h5>
+                <form method="post" enctype="multipart/form-data">
+                    <!-- Added enctype -->
+                    {% csrf_token %}
+
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-group mb-3">
+                                <label for="first_name" class="col-form-label">First name</label>
+                                <input type="text" class="form-control"
+                                    id="first_name" name="first_name"
+                                    placeholder="Enter first name" required>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group mb-3">
+                                <label for="last_name" class="col-form-label">Last name</label>
+                                <input type="text" class="form-control"
+                                    id="last_name" name="last_name"
+                                    placeholder="Enter last name" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Username and Email fields -->
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-group mb-3">
+                                <label for="username" class="col-form-label">Username</label>
+                                <input type="text" class="form-control"
+                                    id="username" name="username"
+                                    placeholder="Enter username" required>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group mb-3">
+                                <label for="email" class="col-form-label">Email address</label>
+                                <input type="email" class="form-control"
+                                    id="email"
+                                    name="email" placeholder="Enter email">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contact and Department fields -->
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-group mb-3">
+                                <label for="contact" class="col-form-label">Contact Details</label>
+                                <input type="number" class="form-control"
+                                       id="contact" name="contact"
+                                       placeholder="Enter contact details">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="row">
+                                <div class="col">
+                                    <div class="form-check mb-3 mt-5">
+                                        <label class="form-check-label" for="is_department">
+                                            <input type="checkbox" class="form-check-input" id="is_department" name="is_department" onchange="toggleDepartmentCheckbox()">
+                                            Is Department
+                                        </label>
+                                    </div>
+                                </div>
+                    
+                                <div class="col">
+                                    <label class="col-sm-2 col-form-label">Office</label>
+                                    <div class="col-sm-10">
+                                        <select class="form-select" name="office" aria-label="Default select example">
+                                            <option value="" selected>Open this select menu</option>
+                                            {% for office in offices %}
+                                                <option value="{{office.id}}">{{office.office_name}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                    
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col">
+                                    <div class="form-check mb-3 mt-5">
+                                        <label class="form-check-label" for="is_district_rgtr">
+                                            <input type="checkbox" class="form-check-input" id="is_district_rgtr" name="is_district_rgtr" onchange="toggleDistrictCheckbox()">
+                                            Is District Admin
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col" id="district_div" style="display:none;">
+                                    <label class="col-sm-2 col-form-label">District</label>
+                                    <div class="col-sm-10">
+                                        <select class="form-select" name="district_id" aria-label="Default select example">
+                                            <option value="" selected>Open this select menu</option>
+                                            {% for district in districts %}
+                                                <option value="{{district.id}}">{{district.district_name}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                    
+                        </div>
+                    
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col">
+                                    <div class="form-check mb-3 mt-5">
+                                        <label class="form-check-label" for="is_digr">
+                                            <input type="checkbox" class="form-check-input" id="is_digr" name="is_digr" onchange="toggleDigrCheckbox()">
+                                            Is Deputy IGR
+                                        </label>
+                                    </div>
+                                </div>
+                    
+                                <div class="col" id="zone_div" style="display:none;">
+                                    <label class="col-sm-2 col-form-label">Zone</label>
+                                    <div class="col-sm-10">
+                                        <select class="form-select" name="zone_id" aria-label="Default select example">
+                                            <option value="" selected>Open this select menu</option>
+                                            {% for zone in zones %}
+                                                <option value="{{zone.id}}">{{zone.zone_name}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Avatar upload -->
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-check mb-3 mt-5">
+                                <label class="form-check-label" for="is_igr">
+                                    <input type="checkbox" class="form-check-input" id="is_igr" name="is_igr" onchange="toggleIgrCheckbox()">
+                                    Is IGR
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col">
+                                    <div class="form-check mb-3 mt-5">
+                                        <label class="form-check-label" for="is_agency_admin">
+                                            <input type="checkbox" class="form-check-input" id="is_agency_admin" name="is_agency_admin" onchange="toggleAgencyCheckbox()">
+                                            Agency Admin
+                                        </label>
+                                    </div>
+                                </div>
+                    
+                                <div class="col" id="agency_div" style="display:none;">
+                                    <label class="col-sm-2 col-form-label">Agency</label>
+                                    <div class="col-sm-10">
+                                        <select class="form-select" name="agency_id" aria-label="Default select example">
+                                            <option value="" selected>Open this select Agency</option>
+                                            {% for agency in agencies %}
+                                                <option value="{{agency.id}}">{{agency.name}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Password fields -->
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-group mb-3">
+                                <label for="password1" class="col-form-label">Password</label>
+                                <input type="password" class="form-control"
+                                    id="password1" name="password1"
+                                    placeholder="Enter password" required>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group mb-3">
+                                <label for="password2" class="col-form-label">Confirm Password</label>
+                                <input type="password" class="form-control"
+                                    id="password2" name="password2"
+                                    placeholder="Confirm password" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary mt-3">Create User</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    function previewImage(event) {
+        const file = event.target.files[0];
+        const preview = document.getElementById('avatarPreview');
+
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                preview.style.display = 'block';  // Show the image preview
+            }
+            reader.readAsDataURL(file);
+        } else {
+            preview.src = '#';
+            preview.style.display = 'none';  // Hide the image preview if no file is selected
+        }
+    }
+    </script>
+
+ 
+</section>
+<script>
+    function toggleDistrictDropdown() {
+        var districtCheckbox = document.getElementById('is_district_rgtr');
+        var districtDiv = document.getElementById('district_div');
+        districtDiv.style.display = districtCheckbox.checked ? 'block' : 'none';
+    }
+
+    function toggleZoneDropdown() {
+        var digrCheckbox = document.getElementById('is_digr');
+        var zoneDiv = document.getElementById('zone_div');
+        zoneDiv.style.display = digrCheckbox.checked ? 'block' : 'none';
+    }
+
+    function toggleAgencyDropdown (){
+        var agencyCheckbox = document.getElementById('is_agency_admin');
+        var agencyDiv = document.getElementById('agency_div');
+        agencyDiv.style.display = agencyCheckbox.checked? 'block' : 'none';
+    }
+</script>
+<script>
+    function toggleDepartmentCheckbox() {
+        var departmentCheckbox = document.getElementById('is_department');
+        var districtCheckbox = document.getElementById('is_district_rgtr');
+        var digrCheckbox = document.getElementById('is_digr');
+        var igrCheckbox = document.getElementById('is_igr');
+        var agenciesCheckbox = document.getElementById('is_agency_admin');
+        
+        // Disable/Enable other checkboxes based on 'Is Department' checkbox state
+        var disable = departmentCheckbox.checked;
+        
+        districtCheckbox.disabled = disable;
+        digrCheckbox.disabled = disable;
+        igrCheckbox.disabled = disable;
+        agenciesCheckbox.disabled = disable;
+        
+        // If department is checked, hide the district and zone dropdowns
+        toggleDistrictDropdown();
+        toggleZoneDropdown();
+    }
+
+    function toggleAgencyCheckbox() {
+        var agencyCheckbox = document.getElementById('is_agency_admin');
+        var departmentCheckbox = document.getElementById('is_department');
+        var districtCheckbox = document.getElementById('is_district_rgtr');
+        var digrCheckbox = document.getElementById('is_digr');
+        var igrCheckbox = document.getElementById('is_igr');
+        
+        // Disable/Enable other checkboxes based on 'Is Agency Admin' checkbox state
+        var disable = agencyCheckbox.checked;
+        
+        departmentCheckbox.disabled = disable;
+        digrCheckbox.disabled = disable;
+        igrCheckbox.disabled = disable;
+        districtCheckbox.disabled = disable;
+
+        toggleAgencyDropdown()
+    }
+
+    function toggleDistrictCheckbox() {
+        var districtCheckbox = document.getElementById('is_district_rgtr');
+        var departmentCheckbox = document.getElementById('is_department');
+        var digrCheckbox = document.getElementById('is_digr');
+        var igrCheckbox = document.getElementById('is_igr');
+        var agenciesCheckbox = document.getElementById('is_agency_admin');
+        
+        // Disable/Enable other checkboxes based on 'Is District Admin' checkbox state
+        var disable = districtCheckbox.checked;
+        
+        departmentCheckbox.disabled = disable;
+        digrCheckbox.disabled = disable;
+        igrCheckbox.disabled = disable;
+        agenciesCheckbox.disabled = disable;
+
+        // Show/hide district dropdown
+        toggleDistrictDropdown();
+    }
+
+    function toggleDigrCheckbox() {
+        var digrCheckbox = document.getElementById('is_digr');
+        var departmentCheckbox = document.getElementById('is_department');
+        var districtCheckbox = document.getElementById('is_district_rgtr');
+        var igrCheckbox = document.getElementById('is_igr');
+        var agenciesCheckbox = document.getElementById('is_agency_admin');
+        
+        // Disable/Enable other checkboxes based on 'Is Deputy IGR' checkbox state
+        var disable = digrCheckbox.checked;
+        
+        departmentCheckbox.disabled = disable;
+        districtCheckbox.disabled = disable;
+        igrCheckbox.disabled = disable;
+        agenciesCheckbox.disabled = disable;
+
+        // Show/hide zone dropdown
+        toggleZoneDropdown();
+    }
+
+    function toggleIgrCheckbox() {
+        var igrCheckbox = document.getElementById('is_igr');
+        var departmentCheckbox = document.getElementById('is_department');
+        var districtCheckbox = document.getElementById('is_district_rgtr');
+        var digrCheckbox = document.getElementById('is_digr');
+        var agenciesCheckbox = document.getElementById('is_agency_admin');
+        
+        // Disable/Enable other checkboxes based on 'Is IGR' checkbox state
+        var disable = igrCheckbox.checked;
+        
+        departmentCheckbox.disabled = disable;
+        districtCheckbox.disabled = disable;
+        digrCheckbox.disabled = disable;
+        agenciesCheckbox.disabled = disable;
+    }
+
+    function toggleDistrictDropdown() {
+        var districtCheckbox = document.getElementById('is_district_rgtr');
+        var districtDiv = document.getElementById('district_div');
+        districtDiv.style.display = districtCheckbox.checked ? 'block' : 'none';
+    }
+
+    function toggleZoneDropdown() {
+        var digrCheckbox = document.getElementById('is_digr');
+        var zoneDiv = document.getElementById('zone_div');
+        zoneDiv.style.display = digrCheckbox.checked ? 'block' : 'none';
+    }
+</script>
+{% endblock content %}

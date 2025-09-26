@@ -1,0 +1,143 @@
+{% extends 'users/index.html' %}
+{% load static %}
+
+{% block content %}
+    <div class="pagetitle">
+        <h1>Create User Profile</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                <li class="breadcrumb-item">{{request.user.agency.name}}</li>
+                <li class="breadcrumb-item">Users</li>
+                <li class="breadcrumb-item active">Create</li>
+            </ol>
+        </nav>
+    </div><!-- End Page Title -->
+
+    <section class="section">
+        <div class="card">
+            
+            <div class="card-body">
+                <h5 class="card-title">Create User for {{request.user.agency.name}}</h5>
+                <form method="post" enctype="multipart/form-data">
+                    <!-- Added enctype -->
+                    {% csrf_token %}
+
+                    <div class="row">
+                        <div class="col-8">
+                            <div class="row">
+                                <div class="col">
+                                    <div class="form-group mb-3">
+                                        <label for="first_name" class="col-form-label">First name</label>
+                                        <input type="text" class="form-control"
+                                            id="first_name" name="first_name"
+                                            placeholder="Enter first name" required>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group mb-3">
+                                        <label for="last_name" class="col-form-label">Last name</label>
+                                        <input type="text" class="form-control"
+                                            id="last_name" name="last_name"
+                                            placeholder="Enter last name" required>
+                                    </div>
+                                </div>
+                                
+                            </div>
+        
+                            <!-- Username and Email fields -->
+                            <div class="row">
+                                <div class="col">
+                                    <div class="form-group mb-3">
+                                        <label for="email" class="col-form-label">Email address (Username)</label>
+                                        <input type="email" class="form-control"
+                                            id="email"
+                                            name="email" placeholder="Enter email">
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group mb-3">
+                                        <label for="contact" class="col-form-label">Contact Details</label>
+                                        <input type="number" class="form-control"
+                                               id="contact" name="contact"
+                                               placeholder="Enter contact details">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="form-check mb-3 mt-5">
+                                                <label class="form-check-label" for="is_agency_scanning_employee">
+                                                    <input type="checkbox" class="form-check-input" id="is_agency_scanning_employee" name="is_agency_scanning_employee">
+                                                    Is Scanning Employee
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-check mb-3 mt-5">
+                                                <label class="form-check-label" for="is_agency_qc_admin">
+                                                    <input type="checkbox" class="form-check-input" id="is_agency_qc_admin" name="is_agency_qc_admin">
+                                                    Is QC Employee
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col mb-3 mt-5">
+                                    <select class="form-select" name="office" aria-label="Default select example">
+                                        <option value="" selected>Open this select office</option>
+                                        {% for office in offices %}
+                                            <option value="{{office.id}}">{{office.office_name}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                    
+                                
+                            </div>
+        
+                            
+                            <!-- Password fields -->
+                            <div class="row">
+                                <div class="col">
+                                    <div class="form-group mb-3">
+                                        <label for="password1" class="col-form-label">Password</label>
+                                        <input type="password" class="form-control"
+                                            id="password1" name="password1"
+                                            placeholder="Enter password" required>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group mb-3">
+                                        <label for="password2" class="col-form-label">Confirm Password</label>
+                                        <input type="password" class="form-control"
+                                            id="password2" name="password2"
+                                            placeholder="Confirm password" required>
+                                    </div>
+                                </div>
+                            </div>
+        
+                            <button type="submit" class="btn btn-primary mt-3">Create User</button>
+                        </div>
+                        <div class="col"></div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    const scanningCheckbox = document.getElementById("is_agency_scanning_employee");
+    const qcCheckbox = document.getElementById("is_agency_qc_admin");
+
+    scanningCheckbox.addEventListener("change", () => {
+        qcCheckbox.disabled = scanningCheckbox.checked;
+    });
+
+    qcCheckbox.addEventListener("change", () => {
+        scanningCheckbox.disabled = qcCheckbox.checked;
+    });
+</script>
+{% endblock content %}

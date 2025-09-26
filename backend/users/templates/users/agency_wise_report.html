@@ -1,0 +1,165 @@
+{% extends 'users/index.html' %}
+{% load static %}
+
+{% block content %}
+    <div class="pagetitle">
+        <h1>User Wise Document Report for {{agency }}</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">Home</li>
+                <li class="breadcrumb-item">Report</li>
+                <li class="breadcrumb-item active">{{agency }}</li>
+            </ol>
+        </nav>
+    </div><!-- End Page Title -->
+
+    <section class="section">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row align-items-center mb-3">
+                            <div class="col-md-6">
+                                <h5 class="card-title mb-0">{{agency }} Users : {{ total.count }}</h5>
+                            </div>
+                            <div class="col-md-6 text-end">
+                                <form method="get" class="d-inline-flex">
+                                    <input
+                                        type="text"
+                                        name="q"
+                                        class="form-control"
+                                        placeholder="Search users..."
+                                        value="{{ search_query }}"
+                                    />
+                                    <button type="submit" class="btn btn-primary ms-2">Search</button>
+                                </form>
+                                <a href="{% url 'export_agency_report_excel' agency.id %}?q={{ search_query }}"
+                                class="btn btn-success ms-2"
+                                title="Download Excel">
+                                    <i class="bi bi-download"></i>
+                                </a>
+                            </div>
+                        </div>
+
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-primary alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+
+                        <!-- Table with stripped rows -->
+                        <div class="card">
+                            <div class="card-body">
+                                <table class="table table-bordered mt-3">
+                                    <thead class="table-success">
+                                        <tr class="text-center">
+                                            <th>#</th>
+                                            <th>User</th>
+                                            <th class="text-info">Total Uploaded</th>
+                                            <th class="text-info">Total Page Count</th>
+                                            <th class="text-success">Dept Approved</th>
+                                            <th class="text-success">DR Approved</th>
+                                            <th class="text-success">DIGR Approved</th>
+                                            <th class="text-danger">Rejected Files</th>
+                                            <th>Action</th>
+                                            
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for user in page_obj %}
+                                            <tr class="text-center">
+                                                <td>{{ forloop.counter }}</td>
+                                                <td>{{ user.get_full_name }}</td>
+                                                <td class="text-info">{{ user.total_uploaded|default:0 }}</td>
+                                                <td class="text-info">{{ user.total_page_count|default:0 }}</td>
+                                                <td class="text-success">{{ user.dept_approved_count|default:0 }}</td>
+                                                <td class="text-success">{{ user.dr_approved_count|default:0 }}</td>
+                                                <td class="text-success">{{ user.digr_approved_count|default:0 }}</td>
+                                                <td class="text-danger">{{ user.rejected_count|default:0 }}</td>
+                                                <td class="text-info"><a href="{% url 'agency_wise_users_data' user.id %}"><i class="bi bi-eye"></i></a></td>
+                                                
+                                            </tr>
+                                            {% empty %}
+                                            <tr>
+                                                <td colspan="6">No users found for this agency.</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                    <tfoot class="table-light ">
+                                        <tr class="text-center fw-bold">
+                                            <td colspan="2">Total</td>
+                                            <td class="text-info">{{ totals.total_uploaded|default:0 }}</td>
+                                            <td class="text-info">{{ totals.total_page_count|default:0 }}</td>
+                                            <td class="text-success">{{ totals.dept_approved_total|default:0 }}</td>
+                                            <td class="text-success">{{ totals.dr_approved_total|default:0 }}</td>
+                                            <td class="text-success">{{ totals.digr_approved_total|default:0 }}</td>
+                                            <td class="text-danger">{{ totals.rejected_total|default:0 }}</td>
+                                            <td></td>
+                                            
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Pagination Controls -->
+                        <nav aria-label="Page navigation" class="d-flex justify-content-between align-items-center mt-3">
+                            <p class="mb-0">
+                                Showing 
+                                {% if page_obj.has_other_pages %}
+                                    {{ page_obj.start_index }} to {{ page_obj.end_index }}
+                                {% else %}
+                                {{ total.count }}
+                                {% endif %}
+                                entries from {{ total.count }} entries.
+                            </p>
+                        
+                            <ul class="pagination mb-0">
+                                {% if page_obj.has_previous %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?q={{ search_query }}&page=1" aria-label="First">
+                                            <span aria-hidden="true">«</span>
+                                        </a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?q={{ search_query }}&page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                                            <span aria-hidden="true">‹</span>
+                                        </a>
+                                    </li>
+                                {% endif %}
+                        
+                                {% for num in page_obj.paginator.page_range %}
+                                    {% if num == 1 or num == page_obj.paginator.num_pages or num == page_obj.number or num == page_obj.number|add:"-1" or num == page_obj.number|add:"1" %}
+                                        <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+                                            <a class="page-link" href="?q={{ search_query }}&page={{ num }}">{{ num }}</a>
+                                        </li>
+                                    {% elif num == page_obj.number|add:"-2" or num == page_obj.number|add:"2" %}
+                                        <li class="page-item disabled"><span class="page-link">...</span></li>
+                                    {% endif %}
+                                {% endfor %}
+                        
+                                {% if page_obj.has_next %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?q={{ search_query }}&page={{ page_obj.next_page_number }}" aria-label="Next">
+                                            <span aria-hidden="true">›</span>
+                                        </a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?q={{ search_query }}&page={{ page_obj.paginator.num_pages }}" aria-label="Last">
+                                            <span aria-hidden="true">»</span>
+                                        </a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                        <!-- End Table with stripped rows -->
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock content %}

@@ -1,0 +1,155 @@
+{% extends 'users/index.html' %}
+{% load static %}
+
+{% block content %}
+<section class="section">
+
+    <div class="pagetitle">
+        <h1>Received Documents</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Home</a></li>
+                <li class="breadcrumb-item">Received</li>
+            </ol>
+        </nav>
+    </div><!-- End Page Title -->
+
+</section>
+<div class="d-flex justify-content-between align-items-center">
+    <h5 class="card-title mb-0">Recieved Documents</h5>
+    <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#documentForm" aria-expanded="false" aria-controls="documentForm">
+        Add
+    </button>
+</div>
+<div class="collapse" id="documentForm">
+    <div class="card">
+        <div class="card-body">
+
+            <form method="post" class="mt-4 p-3 border rounded bg-light">
+                {% csrf_token %}
+                <div class="row gy-3">
+                    <!-- First Row: Date, Document Type, Index Type -->
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold" for="date">Date:</label>
+                        <input type="date" name="from_date" class="form-control" id="date" value="{{ today_date|date:'Y-m-d' }}">
+                    </div>
+            
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">Document Type:</label>
+                        <div class="d-flex flex-wrap">
+                            <div class="form-check me-3">
+                                <input class="form-check-input" type="checkbox" name="document_type" value="I" id="docTypeI" 
+                                    {% if 'I' in selected_document_types %}checked{% endif %} onchange="toggleIndexTypeCheckboxes()">
+                                <label class="form-check-label" for="docTypeI">I</label>
+                            </div>
+                            <div class="form-check me-3">
+                                <input class="form-check-input" type="checkbox" name="document_type" value="MTPR" id="docTypeMTPR"
+                                    {% if 'MTPR' in selected_document_types %}checked{% endif %}>
+                                <label class="form-check-label" for="docTypeMTPR">MTPR</label>
+                            </div>
+                            <div class="form-check me-3">
+                                <input class="form-check-input" type="checkbox" name="document_type" value="RH" id="docTypeRH"
+                                    {% if 'RH' in selected_document_types %}checked{% endif %}>
+                                <label class="form-check-label" for="docTypeRH">RH</label>
+                            </div>
+                            <div class="form-check me-3">
+                                <input class="form-check-input" type="checkbox" name="document_type" value="R" id="docTypeR"
+                                    {% if 'R' in selected_document_types %}checked{% endif %}>
+                                <label class="form-check-label" for="docTypeR">R</label>
+                            </div>
+                            <div class="form-check me-3">
+                                <input class="form-check-input" type="checkbox" name="document_type" value="LO" id="docTypeLO"
+                                    {% if 'LO' in selected_document_types %}checked{% endif %}>
+                                <label class="form-check-label" for="docTypeLO">LO</label>
+                            </div>
+                            <div class="form-check me-3">
+                                <input class="form-check-input" type="checkbox" name="document_type" value="MO" id="docTypeMO"
+                                    {% if 'MO' in selected_document_types %}checked{% endif %}>
+                                <label class="form-check-label" for="docTypeMO">MO</label>
+                            </div>
+                            <div class="form-check me-3">
+                                <input class="form-check-input" type="checkbox" name="document_type" value="CO" id="docTypeCO"
+                                    {% if 'CO' in selected_document_types %}checked{% endif %}>
+                                <label class="form-check-label" for="docTypeCO">CO</label>
+                            </div>
+                        </div>
+                    </div>
+            
+                    <div class="col-md-4" id="indexTypeContainer"
+                        style="display: {% if 'I' in selected_document_types %}block{% else %}none{% endif %};">
+                        <label class="form-label fw-bold">Index Type:</label>
+                        <div class="d-flex flex-wrap">
+                            <div class="form-check me-3">
+                                <input class="form-check-input" type="checkbox" name="index_type" value="1" id="indexType1"
+                                    {% if '1' in selected_index_types %}checked{% endif %}>
+                                <label class="form-check-label" for="indexType1">1</label>
+                            </div>
+                            <div class="form-check me-3">
+                                <input class="form-check-input" type="checkbox" name="index_type" value="2" id="indexType2"
+                                    {% if '2' in selected_index_types %}checked{% endif %}>
+                                <label class="form-check-label" for="indexType2">2</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            
+                <!-- Second Row: Received Documents and Remark -->
+                <div class="row gy-3 mb-3">
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold" for="recDocs">Received Documents:</label>
+                        <input class="form-control" type="number" id="recDocs" name="received" required>
+                    </div>
+            
+                    <div class="col-md-8">
+                        <label class="form-label fw-bold" for="remark">Remark:</label>
+                        <textarea class="form-control" name="remark" id="remark" required></textarea>
+                    </div>
+                </div>
+            
+                <!-- Last Row: Save Button -->
+                <div class="row text-end">
+                    <div class="col-auto">
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
+                </div>
+            </form>
+            
+        </div>
+    </div>
+  </div>
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>Sr No.</th>
+            <th>File</th>
+            <th>Received</th>
+
+            <th>Remark</th>
+            <th>Action</th>
+
+        </tr>
+    </thead>
+    <tbody>
+        {% for doc in documents %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ doc.document_type }} {% if doc.index_type %} {{ doc.index_type }} {% endif %}</td>
+                <td>{{doc.received}}</td>
+               
+                <td>{{doc.remark}}</td>
+                <td>
+                    <i class="bi bi-pencil-square"></i>
+                </td>
+               
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<script>
+    function toggleIndexTypeCheckboxes() {
+        var indexTypeContainer = document.getElementById('indexTypeContainer');
+        var docTypeI = document.getElementById('docTypeI');
+        indexTypeContainer.style.display = docTypeI.checked ? 'block' : 'none';
+    }
+</script>
+{% endblock content %}

@@ -1,0 +1,460 @@
+{% extends 'users/index.html' %}
+{% load static %}
+{% block content %}
+<style>
+    .card-sro {
+        max-height: 400px;
+    }
+
+    /* Apply overflow to the tbody's container */
+    .table-scrollable {
+        max-height: 200px;
+        overflow-y: auto;
+    }
+
+    /* Make sure the table's layout doesn't stretch */
+    .table {
+        width: 100%;
+        table-layout: fixed;
+    }
+
+    .approved {
+    color: green;
+    font-weight: bold;
+}
+
+.rejected {
+    color: red;
+    font-weight: bold;
+}
+</style>
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% if request.user.is_igr %}
+<div class="pagetitle">
+    
+    <h1>Welcome to IGR Dashboard</h1>
+
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item active">Dashboard</li>
+        </ol>
+    </nav>
+</div>
+<section>
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-primary alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+ 
+    <div class="row">
+        <div class="col">
+            <div class="card dash-status green-bg">
+                <div class="card-body">
+                    <div class="d-flex">
+                        <div class="icon-bg">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24"
+                                height="24" viewBox="0 0 24 24">
+                                <path fill="currentColor"
+                                    d="M15 7h5.5L15 1.5zM8 0h8l6 6v12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2M4 4v18h16v2H4a2 2 0 0 1-2-2V4z" />
+                            </svg>
+
+                        </div>
+                        <div class="text-part">
+                            <h6>Total Received Documents For Scanning</h6>
+                        </div>
+                    </div>
+                    <div class="count">
+                        0
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card dash-status green-bg">
+                <div class="card-body">
+                    <div class="d-flex">
+                        <div class="icon-bg">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24"
+                                height="24" viewBox="0 0 24 24">
+                                <path fill="currentColor"
+                                    d="M15 7h5.5L15 1.5zM8 0h8l6 6v12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2M4 4v18h16v2H4a2 2 0 0 1-2-2V4z" />
+                            </svg>
+
+                        </div>
+                        <div class="text-part">
+                            <h6>Total Pages Submitted</h6>
+                        </div>
+                        <br>
+                    </div>
+                    <div class="count">
+                        {{total_pages}}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card dash-status orange-bg">
+                <div class="card-body">
+                    <div class="d-flex">
+                        <div class="icon-bg">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24"
+                                height="24" viewBox="0 0 24 24">
+                                <path fill="currentColor"
+                                    d="M15 7h5.5L15 1.5zM8 0h8l6 6v12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2M4 4v18h16v2H4a2 2 0 0 1-2-2V4z" />
+                            </svg>
+
+                        </div>
+                        <div class="text-part">
+                            <h6>Total Submitted Documents  For QC</h6>
+                        </div>
+                    </div>
+                    <div class="count">
+                        {{all_submitted.count}}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="card dash-status orange-bg">
+                <div class="card-body">
+                    <div class="d-flex">
+                        <div class="icon-bg">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24"
+                                height="24" viewBox="0 0 24 24">
+                                <path fill="currentColor"
+                                    d="M15 7h5.5L15 1.5zM8 0h8l6 6v12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2M4 4v18h16v2H4a2 2 0 0 1-2-2V4z" />
+                            </svg>
+
+                        </div>
+                        <div class="text-part">
+                            <h6>Total Pending Documents For QC</h6>
+                        </div>
+                    </div>
+                    <div class="count">
+                        {{in_process}}
+                    </div>
+                </div>
+            </div>
+        </div>
+       
+        
+    </div>
+    <div class="row">
+        <div class="col">
+            <div class="card dash-status green-bg">
+                <div class="card-body">
+                    <div class="d-flex">
+                        <div class="icon-bg">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24"
+                                height="24" viewBox="0 0 24 24">
+                                <path fill="currentColor"
+                                    d="M15 7h5.5L15 1.5zM8 0h8l6 6v12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2M4 4v18h16v2H4a2 2 0 0 1-2-2V4z" />
+                            </svg>
+
+                        </div>
+                        <div class="text-part">
+                            <h6>In Process Documents For QC</h6>
+                        </div>
+                    </div>
+                    <div class="count">
+                        {{all_pending.count}}
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card dash-status green-bg">
+                <div class="card-body">
+                    <div class="d-flex">
+                        <div class="icon-bg">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24"
+                                height="24" viewBox="0 0 24 24">
+                                <path fill="currentColor"
+                                    d="M15 7h5.5L15 1.5zM8 0h8l6 6v12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2M4 4v18h16v2H4a2 2 0 0 1-2-2V4z" />
+                            </svg>
+
+                        </div>
+                        <div class="text-part">
+                            <h6>Total Approved Documents From All Dept</h6>
+                        </div>
+                    </div>
+                    <div class="count">
+                        {{all_approved.count}}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card dash-status red-bg">
+                <div class="card-body">
+                    <div class="d-flex">
+                        <div class="icon-bg">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24"
+                                height="24" viewBox="0 0 24 24">
+                                <path fill="currentColor"
+                                    d="M15 7h5.5L15 1.5zM8 0h8l6 6v12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2M4 4v18h16v2H4a2 2 0 0 1-2-2V4z" />
+                            </svg>
+
+                        </div>
+                        <div class="text-part">
+                            <h6>Total Rejected Documents From All Dept</h6>
+                        </div>
+                    </div>
+                    <div class="count">
+                        {{all_rejected.count}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <div class="card dash-status green-bg">
+                <div class="card-body">
+                    <div class="d-flex">
+                        <div class="icon-bg">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24"
+                                height="24" viewBox="0 0 24 24">
+                                <path fill="currentColor"
+                                    d="M15 7h5.5L15 1.5zM8 0h8l6 6v12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2M4 4v18h16v2H4a2 2 0 0 1-2-2V4z" />
+                            </svg>
+
+                        </div>
+                        <div class="text-part">
+                            <h6>Total <span class="text-warning">Pending</span>,<span class="approved">Approved</span>  and <span class="rejected">Rejected</span> Documents By SRO</h6>
+                        </div>
+                    </div>
+                    <div class="count">
+                        <span class="text-warning">{{pending_by_sro.count}}</span>
+                        <span >-</span>
+                        <span class="approved">{{ approved_by_sro }}</span>
+                        <span >-</span>
+                        <span class="rejected">{{ rejected_by_sro.count }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card dash-status green-bg">
+                <div class="card-body">
+                    <div class="d-flex">
+                        <div class="icon-bg">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24"
+                                height="24" viewBox="0 0 24 24">
+                                <path fill="currentColor"
+                                    d="M15 7h5.5L15 1.5zM8 0h8l6 6v12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2M4 4v18h16v2H4a2 2 0 0 1-2-2V4z" />
+                            </svg>
+
+                        </div>
+                        <div class="text-part">
+                            <h6>Total <span class="text-warning">Pending</span>,<span class="approved">Approved</span>  and <span class="rejected">Rejected</span>Documents By DR</h6>
+                        </div>
+                        <br>
+                    </div>
+                    <div class="count">
+                        <span class="text-warning">{{pending_by_dr.count}}</span>
+                        <span >-</span>
+                        <span class="approved">{{ approved_by_dr.count }}</span>
+                        <span >-</span>
+                        <span class="rejected">{{ rejected_by_dr.count }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card dash-status orange-bg">
+                <div class="card-body">
+                    <div class="d-flex">
+                        <div class="icon-bg">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24"
+                                height="24" viewBox="0 0 24 24">
+                                <path fill="currentColor"
+                                    d="M15 7h5.5L15 1.5zM8 0h8l6 6v12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2M4 4v18h16v2H4a2 2 0 0 1-2-2V4z" />
+                            </svg>
+
+                        </div>
+                        <div class="text-part">
+                            <h6>Total <span class="text-warning">Pending</span>,<span class="approved">Approved</span>  and <span class="rejected">Rejected</span> Documents By DIGR</h6>
+                        </div>
+                    </div>
+                    <div class="count">
+                        <span class="text-warning">{{pending_by_digr.count}}</span>
+                        <span >-</span>
+                        <span class="approved">{{ approved_by_digr.count }}</span>
+                        <span >-</span>
+                        <span class="rejected">{{ rejected_by_digr.count }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>        
+    </div>
+    <!-- DIGR Data Section -->
+    <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">All DIGR's Data</h5>
+            <canvas id="zoneChart" style="height: 200px;"></canvas>
+        </div>
+    </div>
+
+   
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">All DR's Data</h5>
+            <div style="overflow-x: auto; width: 100%; max-width: 100%; white-space: nowrap;">
+                <canvas id="districtChart" style="display: block;"></canvas>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">All SRO's Data</h5>
+            <!-- Scrollable container -->
+            <div style="overflow-x: auto; width: 100%; max-width: 100%; white-space: nowrap;">
+                <canvas id="column-chart3" style="display: block;"></canvas>
+            </div>
+        </div>
+    </div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Office Chart Data
+    var officeData = {{ office_data|safe }};
+    console.log("Office Data:", officeData);
+
+    // Extract labels and data arrays
+    var labels = officeData.map(office => office.name);
+    var totalCount = officeData.map(office => office.total_count);
+    var approvedCount = officeData.map(office => office.approved_count);
+    var rejectedCount = officeData.map(office => office.rejected_count);
+    var pendingCount = officeData.map(office => office.pending_count);
+
+    // Set canvas width dynamically
+    var canvas = document.getElementById('column-chart3');
+    canvas.width = Math.max(1000, labels.length * 20);
+    canvas.height = 400;
+
+    var ctx = canvas.getContext('2d');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [
+                { label: 'Total', data: totalCount, fill: false, borderColor:'rgba(75, 192, 192, 0.6)', tension: 0.1 },
+                { label: 'Approved', data: approvedCount, fill: false, borderColor:'rgba(54, 162, 235, 0.6)', tension: 0.1 },
+                { label: 'Rejected', data: rejectedCount, fill: false, borderColor: 'rgba(255, 99, 132, 0.6)', tension: 0.1 },
+                { label: 'Pending', data: pendingCount, fill: false, borderColor: 'rgba(255, 159, 64, 0.6)', tension: 0.1 }
+            ]
+        },
+        options: {
+            responsive: false,
+            scales: {
+                y: { beginAtZero: true },
+                x: {
+                    ticks: {
+                        autoSkip: false,
+                        maxTicksLimit: labels.length,
+                        maxRotation: 90,
+                        minRotation: 45
+                    }
+                }
+            },
+            plugins: {
+            legend: { display: true },
+            tooltip: { enabled: true }
+        }
+        }
+    });
+
+    // District Chart Data
+    const districtData = {{ district_data|safe }};
+    console.log("District Data:", districtData);
+
+    const districtLabels = districtData.map(item => item.name);
+    const districtApprovedCounts = districtData.map(item => item.approved_count);
+    const districtRejectedCounts = districtData.map(item => item.rejected_count);
+    const districtPendingCounts = districtData.map(item => item.pending_count);
+    const districtTotalCounts = districtData.map(item => item.total_count_district)
+
+    var districtChartcanvas = document.getElementById('districtChart');
+    districtChartcanvas.width = Math.max(100, labels.length * 20);
+    districtChartcanvas.height = 400;
+
+    const districtCtx = districtChartcanvas.getContext('2d');
+    new Chart(districtCtx, {
+        type: 'bar',
+        data: {
+            labels: districtLabels,
+            datasets: [
+            { label: 'Total Files', data: districtTotalCounts, backgroundColor: 'rgba(75, 192, 192, 0.6)', borderColor: 'rgba(75, 192, 192, 1)', borderWidth: 1 },
+            { label: 'Approved Files', data: districtApprovedCounts, backgroundColor: 'rgba(54, 162, 235, 0.6)', borderColor: 'rgba(54, 162, 235, 1)', borderWidth: 1 },
+            { label: 'Rejected Files', data: districtRejectedCounts, backgroundColor: 'rgba(255, 99, 132, 0.6)', borderColor: 'rgba(255, 99, 132, 1)', borderWidth: 1 },
+            { label: 'Pending Files', data: districtPendingCounts, backgroundColor: 'rgba(255, 159, 64, 0.6)', borderColor: 'rgba(255, 159, 64, 1)', borderWidth: 1 }
+
+            ]
+        },
+        options: {
+        responsive: false,
+        maintainAspectRatio: false,  // Allow chart to expand
+        scales: {
+            y: { beginAtZero: true },
+            x: { 
+                ticks: { autoSkip: false },  // Prevent skipping labels
+                barPercentage: 1,           // Ensure bars are fully visible
+                categoryPercentage: 1       // Make sure each category has space
+            }
+        },
+        plugins: {
+            legend: { display: true },
+            tooltip: { enabled: true }
+        }
+    }
+    });
+
+    // Zone Chart Data
+    const zoneData = {{ zone_data|safe }};
+    console.log("Zone Data:", zoneData);
+
+    const zoneLabels = zoneData.map(item => item.name);
+    const zoneApprovedCounts = zoneData.map(item => item.approved_count);
+    const zoneRejectedCounts = zoneData.map(item => item.rejected_count);
+    const zonePendingCounts = zoneData.map(item => item.pending_count);
+    const zoneTotalCounts = zoneData.map(item => item.total_count_zone);
+
+    const zoneCtx = document.getElementById('zoneChart').getContext('2d');
+    new Chart(zoneCtx, {
+    type: 'bar',
+    data: {
+        labels: zoneLabels,
+        datasets: [
+            { label: 'Total Files', data: zoneTotalCounts, backgroundColor: 'rgba(75, 192, 192, 0.6)', borderColor: 'rgba(75, 192, 192, 1)', borderWidth: 1 },
+            { label: 'Approved Files', data: zoneApprovedCounts, backgroundColor: 'rgba(54, 162, 235, 0.6)', borderColor: 'rgba(54, 162, 235, 1)', borderWidth: 1 },
+            { label: 'Rejected Files', data: zoneRejectedCounts, backgroundColor: 'rgba(255, 99, 132, 0.6)', borderColor: 'rgba(255, 99, 132, 1)', borderWidth: 1 },
+            { label: 'Pending Files', data: zonePendingCounts, backgroundColor: 'rgba(255, 159, 64, 0.6)', borderColor: 'rgba(255, 206, 86, 1)', borderWidth: 1 }
+        ]
+    },
+    options: {
+        responsive: true,
+        scales: {
+            y: { beginAtZero: true },
+            x: { barPercentage: 0.8, categoryPercentage: 0.9 }
+        }
+    }
+    });
+</script>
+
+
+</section>
+
+{% endif %}
+
+{% endblock %}

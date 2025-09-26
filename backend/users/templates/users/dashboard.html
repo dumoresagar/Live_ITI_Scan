@@ -1,0 +1,1005 @@
+{% extends 'users/index.html' %}
+{% load static %}
+{% block content %}
+<div class="pagetitle">
+    {% if request.user.is_department %}
+    <h1>Welcome to SRO Dashboard</h1>
+    {% elif request.user.is_district_rgtr %}
+    <h1>Welcome to District Registrar Dashboard</h1>
+    {% elif request.user.is_digr %}
+    <h1>Welcome to IGR Dashboard</h1>
+    {% else %}
+    <h1>Welcome to Dashboard</h1>
+    {% endif %}
+
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item active">Dashboard</li>
+        </ol>
+    </nav>
+</div>
+
+{% if messages %}
+
+{% for message in messages %}
+<div class="alert alert-primary alert-dismissible fade show" role="alert">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"
+        aria-label="Close"></button>
+</div>
+{% endfor %}
+
+{% endif %}
+
+<section class="section dashboard">
+    {% if request.user.is_department %}
+
+    <div class="row">
+        <div class="col">
+            <a href="{% url 'files_for_qc' %}"
+                class="card dash-status orange-bg">
+                <div class="card-body">
+                    <div class="d-flex">
+                        <div class="icon-bg">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24"
+                                height="24" viewBox="0 0 24 24">
+                                <path fill="currentColor"
+                                    d="M15 7h5.5L15 1.5zM8 0h8l6 6v12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2M4 4v18h16v2H4a2 2 0 0 1-2-2V4z" />
+                            </svg>
+
+                        </div>
+                        <div class="text-part">
+                            <h6>Total Records for QC</h6>
+                        </div>
+                    </div>
+                    <div class="count">
+                        {{p_files.count}}
+                    </div>
+                </div>
+            </a>
+
+        </div>
+
+        <div class="col">
+            <a href="{% url 'self_approved_files_sro' %}"
+                class="card dash-status green-bg">
+                <div class="card-body">
+                    <div class="d-flex">
+                        <div class="icon-bg ">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="512"
+                                height="512" viewBox="0 0 512 512">
+                                <path fill="currentColor"
+                                    d="m146.217 28.218l-100.07 42.86l106.296 248.194l41.188-17.64l-27.606-191.945l-1.28-8.909l78.567-11.3l-12.519-29.23c-16.682 3.773-28.871 3.449-47.402 21.062l-5.993 5.693l-6.181-5.484c-18.118-16.072-20.828-36.566-25-53.301m18.912.492c3.243 12.805 5.535 24.275 12.777 33.68c12.818-10.212 24.447-14.227 34.951-16.733c-14.485-7.674-29.652-12.217-47.728-16.947m127.746 71.826l-107.752 15.496l38.436 267.25l36.978-5.318l23.188-193.996l1.068-8.936l86.086 10.29l-4.598-31.96c-17.092-.671-28.78-4.14-51.24 8.076l-7.26 3.95l-4.552-6.899c-13.34-20.213-10.655-40.708-10.354-57.953m18.139 5.367c-.182 13.21-.937 24.883 3.625 35.842c15.025-6.547 27.298-7.415 38.093-7.117c-12.006-11.162-25.481-19.477-41.718-28.725m-10.485 89.139l-32.043 268.092l172.77 20.648l24.598-205.793c-16.337-5.073-26.73-11.452-51.586-5.465l-8.034 1.936l-2.61-7.84c-7.655-22.977.243-42.079 4.997-58.658zm124.225 22.799c-3.594 12.713-7.345 23.792-5.775 35.558c16.207-2.435 28.286-.097 38.636 2.985c-8.708-13.889-19.571-25.409-32.861-38.543" />
+                            </svg>
+
+                        </div>
+                        <div class="text-part">
+                            <h2>Approved QC</h2>
+                        </div>
+                    </div>
+                    <div class="count">
+                        {{sro_self_approved.count}}
+                    </div>
+                </div>
+            </a>
+
+        </div>
+        <!-- <div class="col">
+            <a href="{% url 'all_dept_approved_files' %}"
+                class="card dash-status green-bg">
+                <div class="card-body">
+                    <div class="d-flex">
+                        <div class="icon-bg ">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="512"
+                                height="512" viewBox="0 0 512 512">
+                                <path fill="currentColor"
+                                    d="m146.217 28.218l-100.07 42.86l106.296 248.194l41.188-17.64l-27.606-191.945l-1.28-8.909l78.567-11.3l-12.519-29.23c-16.682 3.773-28.871 3.449-47.402 21.062l-5.993 5.693l-6.181-5.484c-18.118-16.072-20.828-36.566-25-53.301m18.912.492c3.243 12.805 5.535 24.275 12.777 33.68c12.818-10.212 24.447-14.227 34.951-16.733c-14.485-7.674-29.652-12.217-47.728-16.947m127.746 71.826l-107.752 15.496l38.436 267.25l36.978-5.318l23.188-193.996l1.068-8.936l86.086 10.29l-4.598-31.96c-17.092-.671-28.78-4.14-51.24 8.076l-7.26 3.95l-4.552-6.899c-13.34-20.213-10.655-40.708-10.354-57.953m18.139 5.367c-.182 13.21-.937 24.883 3.625 35.842c15.025-6.547 27.298-7.415 38.093-7.117c-12.006-11.162-25.481-19.477-41.718-28.725m-10.485 89.139l-32.043 268.092l172.77 20.648l24.598-205.793c-16.337-5.073-26.73-11.452-51.586-5.465l-8.034 1.936l-2.61-7.84c-7.655-22.977.243-42.079 4.997-58.658zm124.225 22.799c-3.594 12.713-7.345 23.792-5.775 35.558c16.207-2.435 28.286-.097 38.636 2.985c-8.708-13.889-19.571-25.409-32.861-38.543" />
+                            </svg>
+
+                        </div>
+                        <div class="text-part">
+                            <h2>Approved QC(All Dept)</h2>
+                        </div>
+                    </div>
+                    <div class="count">
+                        {{all_approved_files.count}}
+                    </div>
+                </div>
+            </a>
+
+        </div> -->
+        <div class="col">
+            <a href="{% url 'rejected_files' %}"
+                class="card dash-status red-bg">
+                <div class="card-body">
+                    <div class="d-flex">
+                        <div class="icon-bg ">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24"
+                                height="24" viewBox="0 0 24 24">
+                                <g fill="none" stroke="currentColor"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round" stroke-width="2">
+                                    <path d="M15 3v4a1 1 0 0 0 1 1h4" />
+                                    <path
+                                        d="M17 17h-6a2 2 0 0 1-2-2V9m0-4a2 2 0 0 1 2-2h4l5 5v7c0 .294-.063.572-.177.823" />
+                                    <path
+                                        d="M16 17v2a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2M3 3l18 18" />
+                                </g>
+                            </svg>
+
+                        </div>
+                        <div class="text-part">
+                            <h2>Rejected QC</h2>
+                        </div>
+                    </div>
+                    <div class="count">
+                        {{sro_r_files.count}}
+                    </div>
+                </div>
+            </a>
+
+        </div>
+
+        
+
+    </div>
+
+    {% elif request.user.is_district_rgtr %}
+    <div class="row">
+        <!-- Customers Card -->
+
+        <div class="col">
+            <a href="{% url 'sro_approved_files' %}"
+                class="card dash-status orange-bg">
+                <div class="card-body">
+                    <div class="d-flex">
+                        <div class="icon-bg">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24"
+                                height="24" viewBox="0 0 24 24">
+                                <path fill="currentColor"
+                                    d="M15 7h5.5L15 1.5zM8 0h8l6 6v12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2M4 4v18h16v2H4a2 2 0 0 1-2-2V4z" />
+                            </svg>
+
+                        </div>
+                        <div class="text-part">
+                            <h2>Total Records for QC</h2>
+                        </div>
+                    </div>
+                    <div class="count">
+                        {{dist_a_files.count}}
+                    </div>
+                </div>
+            </a>
+        </div>
+            
+        <!-- <div class="col">
+            <a href="{% url 'all_dept_approved_files' %}"
+                class="card dash-status green-bg">
+                <div class="card-body">
+                    <div class="d-flex">
+                        <div class="icon-bg ">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="512"
+                                height="512" viewBox="0 0 512 512">
+                                <path fill="currentColor"
+                                    d="m146.217 28.218l-100.07 42.86l106.296 248.194l41.188-17.64l-27.606-191.945l-1.28-8.909l78.567-11.3l-12.519-29.23c-16.682 3.773-28.871 3.449-47.402 21.062l-5.993 5.693l-6.181-5.484c-18.118-16.072-20.828-36.566-25-53.301m18.912.492c3.243 12.805 5.535 24.275 12.777 33.68c12.818-10.212 24.447-14.227 34.951-16.733c-14.485-7.674-29.652-12.217-47.728-16.947m127.746 71.826l-107.752 15.496l38.436 267.25l36.978-5.318l23.188-193.996l1.068-8.936l86.086 10.29l-4.598-31.96c-17.092-.671-28.78-4.14-51.24 8.076l-7.26 3.95l-4.552-6.899c-13.34-20.213-10.655-40.708-10.354-57.953m18.139 5.367c-.182 13.21-.937 24.883 3.625 35.842c15.025-6.547 27.298-7.415 38.093-7.117c-12.006-11.162-25.481-19.477-41.718-28.725m-10.485 89.139l-32.043 268.092l172.77 20.648l24.598-205.793c-16.337-5.073-26.73-11.452-51.586-5.465l-8.034 1.936l-2.61-7.84c-7.655-22.977.243-42.079 4.997-58.658zm124.225 22.799c-3.594 12.713-7.345 23.792-5.775 35.558c16.207-2.435 28.286-.097 38.636 2.985c-8.708-13.889-19.571-25.409-32.861-38.543" />
+                            </svg>
+
+                        </div>
+                        <div class="text-part">
+                            <h2>Approved QC</h2>
+                        </div>
+                    </div>
+                    <div class="count">
+                        {{all_approved_files.count}}
+                    </div>
+                </div>
+            </a>
+
+        </div> -->
+
+        <div class="col">
+            <a href=""
+                class="card dash-status green-bg">
+                <div class="card-body">
+                    <div class="d-flex">
+                        <div class="icon-bg ">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="512"
+                                height="512" viewBox="0 0 512 512">
+                                <path fill="currentColor"
+                                    d="m146.217 28.218l-100.07 42.86l106.296 248.194l41.188-17.64l-27.606-191.945l-1.28-8.909l78.567-11.3l-12.519-29.23c-16.682 3.773-28.871 3.449-47.402 21.062l-5.993 5.693l-6.181-5.484c-18.118-16.072-20.828-36.566-25-53.301m18.912.492c3.243 12.805 5.535 24.275 12.777 33.68c12.818-10.212 24.447-14.227 34.951-16.733c-14.485-7.674-29.652-12.217-47.728-16.947m127.746 71.826l-107.752 15.496l38.436 267.25l36.978-5.318l23.188-193.996l1.068-8.936l86.086 10.29l-4.598-31.96c-17.092-.671-28.78-4.14-51.24 8.076l-7.26 3.95l-4.552-6.899c-13.34-20.213-10.655-40.708-10.354-57.953m18.139 5.367c-.182 13.21-.937 24.883 3.625 35.842c15.025-6.547 27.298-7.415 38.093-7.117c-12.006-11.162-25.481-19.477-41.718-28.725m-10.485 89.139l-32.043 268.092l172.77 20.648l24.598-205.793c-16.337-5.073-26.73-11.452-51.586-5.465l-8.034 1.936l-2.61-7.84c-7.655-22.977.243-42.079 4.997-58.658zm124.225 22.799c-3.594 12.713-7.345 23.792-5.775 35.558c16.207-2.435 28.286-.097 38.636 2.985c-8.708-13.889-19.571-25.409-32.861-38.543" />
+                            </svg>
+
+                        </div>
+                        <div class="text-part">
+                            <h2>Approved QC {{request.user.get_full_name}}</h2>
+                        </div>
+                    </div>
+                    <div class="count">
+                        {{dist_approved_files.count}}
+                    </div>
+                </div>
+            </a>
+
+        </div>
+
+        <div class="col">
+            <a href=""
+                class="card dash-status red-bg">
+                <div class="card-body">
+                    <div class="d-flex">
+                        <div class="icon-bg ">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24"
+                                height="24" viewBox="0 0 24 24">
+                                <g fill="none" stroke="currentColor"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round" stroke-width="2">
+                                    <path d="M15 3v4a1 1 0 0 0 1 1h4" />
+                                    <path
+                                        d="M17 17h-6a2 2 0 0 1-2-2V9m0-4a2 2 0 0 1 2-2h4l5 5v7c0 .294-.063.572-.177.823" />
+                                    <path
+                                        d="M16 17v2a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2M3 3l18 18" />
+                                </g>
+                            </svg>
+
+                        </div>
+                        <div class="text-part">
+                            <h2>Rejected QC {{request.user.get_full_name}}</h2>
+                        </div>
+                    </div>
+                    <div class="count">
+                        {{dist_rejected_files.count}}
+                    </div>
+                </div>
+            </a>
+        </div>
+
+    </div>
+    {% elif request.user.is_digr %}
+    <div class="row">
+        <!-- Customers Card -->
+        <div class="col">
+            <a href="{% url 'd_a_approved_files' %}"
+                class="card dash-status orange-bg">
+                <div class="card-body">
+                    <div class="d-flex">
+                        <div class="icon-bg">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24"
+                                height="24" viewBox="0 0 24 24">
+                                <path fill="currentColor"
+                                    d="M15 7h5.5L15 1.5zM8 0h8l6 6v12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2M4 4v18h16v2H4a2 2 0 0 1-2-2V4z" />
+                            </svg>
+
+                        </div>
+                        <div class="text-part">
+                            <h2>Total Records for QC {{request.user.get_full_name}}</h2>
+                        </div>
+                    </div>
+                    <div class="count">
+                        {{dr_a_files.count}}
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col">
+            <a href=""
+                class="card dash-status green-bg">
+                <div class="card-body">
+                    <div class="d-flex">
+                        <div class="icon-bg ">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="512"
+                                height="512" viewBox="0 0 512 512">
+                                <path fill="currentColor"
+                                    d="m146.217 28.218l-100.07 42.86l106.296 248.194l41.188-17.64l-27.606-191.945l-1.28-8.909l78.567-11.3l-12.519-29.23c-16.682 3.773-28.871 3.449-47.402 21.062l-5.993 5.693l-6.181-5.484c-18.118-16.072-20.828-36.566-25-53.301m18.912.492c3.243 12.805 5.535 24.275 12.777 33.68c12.818-10.212 24.447-14.227 34.951-16.733c-14.485-7.674-29.652-12.217-47.728-16.947m127.746 71.826l-107.752 15.496l38.436 267.25l36.978-5.318l23.188-193.996l1.068-8.936l86.086 10.29l-4.598-31.96c-17.092-.671-28.78-4.14-51.24 8.076l-7.26 3.95l-4.552-6.899c-13.34-20.213-10.655-40.708-10.354-57.953m18.139 5.367c-.182 13.21-.937 24.883 3.625 35.842c15.025-6.547 27.298-7.415 38.093-7.117c-12.006-11.162-25.481-19.477-41.718-28.725m-10.485 89.139l-32.043 268.092l172.77 20.648l24.598-205.793c-16.337-5.073-26.73-11.452-51.586-5.465l-8.034 1.936l-2.61-7.84c-7.655-22.977.243-42.079 4.997-58.658zm124.225 22.799c-3.594 12.713-7.345 23.792-5.775 35.558c16.207-2.435 28.286-.097 38.636 2.985c-8.708-13.889-19.571-25.409-32.861-38.543" />
+                            </svg>
+
+                        </div>
+                        <div class="text-part">
+                            <h2>Approved QC {{request.user.get_full_name}}</h2>
+                        </div>
+                    </div>
+                    <div class="count">
+                        {{dig_self_approved_files.count}}
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col">
+            <a href=""
+                class="card dash-status red-bg">
+                <div class="card-body">
+                    <div class="d-flex">
+                        <div class="icon-bg ">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24"
+                                height="24" viewBox="0 0 24 24">
+                                <g fill="none" stroke="currentColor"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round" stroke-width="2">
+                                    <path d="M15 3v4a1 1 0 0 0 1 1h4" />
+                                    <path
+                                        d="M17 17h-6a2 2 0 0 1-2-2V9m0-4a2 2 0 0 1 2-2h4l5 5v7c0 .294-.063.572-.177.823" />
+                                    <path
+                                        d="M16 17v2a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2M3 3l18 18" />
+                                </g>
+                            </svg>
+
+                        </div>
+                        <div class="text-part">
+                            <h2>Rejected QC {{request.user.get_full_name}}</h2>
+                        </div>
+                    </div>
+                    <div class="count">
+                        {{self_digr_r_files.count}}
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+    {% else %}
+    <div class="row">
+
+        <!-- Left side columns -->
+
+        <!-- Sales Card -->
+        {% if request.user.is_agency_admin %}
+        <div class="col">
+            <div 
+                class="card dash-status orange-bg">
+                <div class="card-body">
+                    <div class="d-flex">
+                        <div class="icon-bg">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24"
+                                height="24" viewBox="0 0 24 24">
+                                <path fill="currentColor"
+                                    d="M15 7h5.5L15 1.5zM8 0h8l6 6v12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2M4 4v18h16v2H4a2 2 0 0 1-2-2V4z" />
+                            </svg>
+
+                        </div>
+                        <div class="text-part">
+                            <h2>Processed Files</h2>
+                        </div>
+                    </div>
+                    <div class="count">
+                        {{admin_qc_files.count}}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="col">
+            <a href="{% url 'processed_files' %}"
+                class="card dash-status orange-bg">
+                <div class="card-body">
+                    <div class="d-flex">
+                        <div class="icon-bg">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24"
+                                height="24" viewBox="0 0 24 24">
+                                <path fill="currentColor"
+                                    d="M15 7h5.5L15 1.5zM8 0h8l6 6v12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2M4 4v18h16v2H4a2 2 0 0 1-2-2V4z" />
+                            </svg>
+
+                        </div>
+                        <div class="text-part">
+                            <h2>Processed Files</h2>
+                        </div>
+                    </div>
+                    <div class="count">
+                        {{admin_qc_files.count}}
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% endif %}
+        <!-- End Sales Card -->
+
+        <!-- Revenue Card -->
+        <!-- <div class="col-md-6">
+                    <div class="card info-card sales-card">
+
+                        <div class="card-body">
+                            <h5 class="card-title">Unprocessed Files </h5>
+                                <a href="{% url 'scanned_files' %}">
+                                    <div class="d-flex align-items-center">
+                                        <div
+                                            class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                            <i class="bi bi-book-half"></i>
+                                        </div>
+                                        <div class="ps-3">
+                                            <h6>{{u_files.count}}</h6>
+
+                                        </div>
+                                    </div>
+                                </a>
+                        </div>
+
+                    </div>
+                </div> -->
+        <!-- End Revenue Card -->
+
+        <!-- Customers Card -->
+        {% if request.user.is_agency_qc_employee %}
+        <div class="col">
+            <a href=""
+                class="card dash-status green-bg">
+                <div class="card-body">
+                    <div class="d-flex">
+                        <div class="icon-bg ">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="512"
+                                height="512" viewBox="0 0 512 512">
+                                <path fill="currentColor"
+                                    d="m146.217 28.218l-100.07 42.86l106.296 248.194l41.188-17.64l-27.606-191.945l-1.28-8.909l78.567-11.3l-12.519-29.23c-16.682 3.773-28.871 3.449-47.402 21.062l-5.993 5.693l-6.181-5.484c-18.118-16.072-20.828-36.566-25-53.301m18.912.492c3.243 12.805 5.535 24.275 12.777 33.68c12.818-10.212 24.447-14.227 34.951-16.733c-14.485-7.674-29.652-12.217-47.728-16.947m127.746 71.826l-107.752 15.496l38.436 267.25l36.978-5.318l23.188-193.996l1.068-8.936l86.086 10.29l-4.598-31.96c-17.092-.671-28.78-4.14-51.24 8.076l-7.26 3.95l-4.552-6.899c-13.34-20.213-10.655-40.708-10.354-57.953m18.139 5.367c-.182 13.21-.937 24.883 3.625 35.842c15.025-6.547 27.298-7.415 38.093-7.117c-12.006-11.162-25.481-19.477-41.718-28.725m-10.485 89.139l-32.043 268.092l172.77 20.648l24.598-205.793c-16.337-5.073-26.73-11.452-51.586-5.465l-8.034 1.936l-2.61-7.84c-7.655-22.977.243-42.079 4.997-58.658zm124.225 22.799c-3.594 12.713-7.345 23.792-5.775 35.558c16.207-2.435 28.286-.097 38.636 2.985c-8.708-13.889-19.571-25.409-32.861-38.543" />
+                            </svg>
+
+                        </div>
+                        <div class="text-part">
+                            <h2>Approved QC</h2>
+                        </div>
+                    </div>
+                    <div class="count">
+                        {{self_approved_files_agency.count}}
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% elif request.user.is_agency_admin %}
+        <div class="col">
+            <div
+                class="card dash-status green-bg">
+                <div class="card-body">
+                    <div class="d-flex">
+                        <div class="icon-bg ">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="512"
+                                height="512" viewBox="0 0 512 512">
+                                <path fill="currentColor"
+                                    d="m146.217 28.218l-100.07 42.86l106.296 248.194l41.188-17.64l-27.606-191.945l-1.28-8.909l78.567-11.3l-12.519-29.23c-16.682 3.773-28.871 3.449-47.402 21.062l-5.993 5.693l-6.181-5.484c-18.118-16.072-20.828-36.566-25-53.301m18.912.492c3.243 12.805 5.535 24.275 12.777 33.68c12.818-10.212 24.447-14.227 34.951-16.733c-14.485-7.674-29.652-12.217-47.728-16.947m127.746 71.826l-107.752 15.496l38.436 267.25l36.978-5.318l23.188-193.996l1.068-8.936l86.086 10.29l-4.598-31.96c-17.092-.671-28.78-4.14-51.24 8.076l-7.26 3.95l-4.552-6.899c-13.34-20.213-10.655-40.708-10.354-57.953m18.139 5.367c-.182 13.21-.937 24.883 3.625 35.842c15.025-6.547 27.298-7.415 38.093-7.117c-12.006-11.162-25.481-19.477-41.718-28.725m-10.485 89.139l-32.043 268.092l172.77 20.648l24.598-205.793c-16.337-5.073-26.73-11.452-51.586-5.465l-8.034 1.936l-2.61-7.84c-7.655-22.977.243-42.079 4.997-58.658zm124.225 22.799c-3.594 12.713-7.345 23.792-5.775 35.558c16.207-2.435 28.286-.097 38.636 2.985c-8.708-13.889-19.571-25.409-32.861-38.543" />
+                            </svg>
+
+                        </div>
+                        <div class="text-part">
+                            <h2>Approved QC</h2>
+                        </div>
+                    </div>
+                    <div class="count">
+                        {{approved_files_agency.count}}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="col">
+            <a href="{% url 'all_dept_approved_files' %}"
+                class="card dash-status green-bg">
+                <div class="card-body">
+                    <div class="d-flex">
+                        <div class="icon-bg ">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="512"
+                                height="512" viewBox="0 0 512 512">
+                                <path fill="currentColor"
+                                    d="m146.217 28.218l-100.07 42.86l106.296 248.194l41.188-17.64l-27.606-191.945l-1.28-8.909l78.567-11.3l-12.519-29.23c-16.682 3.773-28.871 3.449-47.402 21.062l-5.993 5.693l-6.181-5.484c-18.118-16.072-20.828-36.566-25-53.301m18.912.492c3.243 12.805 5.535 24.275 12.777 33.68c12.818-10.212 24.447-14.227 34.951-16.733c-14.485-7.674-29.652-12.217-47.728-16.947m127.746 71.826l-107.752 15.496l38.436 267.25l36.978-5.318l23.188-193.996l1.068-8.936l86.086 10.29l-4.598-31.96c-17.092-.671-28.78-4.14-51.24 8.076l-7.26 3.95l-4.552-6.899c-13.34-20.213-10.655-40.708-10.354-57.953m18.139 5.367c-.182 13.21-.937 24.883 3.625 35.842c15.025-6.547 27.298-7.415 38.093-7.117c-12.006-11.162-25.481-19.477-41.718-28.725m-10.485 89.139l-32.043 268.092l172.77 20.648l24.598-205.793c-16.337-5.073-26.73-11.452-51.586-5.465l-8.034 1.936l-2.61-7.84c-7.655-22.977.243-42.079 4.997-58.658zm124.225 22.799c-3.594 12.713-7.345 23.792-5.775 35.558c16.207-2.435 28.286-.097 38.636 2.985c-8.708-13.889-19.571-25.409-32.861-38.543" />
+                            </svg>
+
+                        </div>
+                        <div class="text-part">
+                            <h2>Approved QC</h2>
+                        </div>
+                    </div>
+                    <div class="count">
+                        {{all_approved_files.count}}
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% endif %}
+        {% if request.user.is_agency_qc_employee %}
+        <div class="col">
+            <a href=""
+                class="card dash-status red-bg">
+                <div class="card-body">
+                    <div class="d-flex">
+                        <div class="icon-bg ">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24"
+                                height="24" viewBox="0 0 24 24">
+                                <g fill="none" stroke="currentColor"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round" stroke-width="2">
+                                    <path d="M15 3v4a1 1 0 0 0 1 1h4" />
+                                    <path
+                                        d="M17 17h-6a2 2 0 0 1-2-2V9m0-4a2 2 0 0 1 2-2h4l5 5v7c0 .294-.063.572-.177.823" />
+                                    <path
+                                        d="M16 17v2a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2M3 3l18 18" />
+                                </g>
+                            </svg>
+
+                        </div>
+                        <div class="text-part">
+                            <h2>Rejected QC</h2>
+                        </div>
+                    </div>
+                    <div class="count">
+                        {{self_rejected_files_agency.count}}
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% elif request.user.is_agency_admin %}
+        <div class="col">
+            <div
+                class="card dash-status red-bg">
+                <div class="card-body">
+                    <div class="d-flex">
+                        <div class="icon-bg ">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24"
+                                height="24" viewBox="0 0 24 24">
+                                <g fill="none" stroke="currentColor"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round" stroke-width="2">
+                                    <path d="M15 3v4a1 1 0 0 0 1 1h4" />
+                                    <path
+                                        d="M17 17h-6a2 2 0 0 1-2-2V9m0-4a2 2 0 0 1 2-2h4l5 5v7c0 .294-.063.572-.177.823" />
+                                    <path
+                                        d="M16 17v2a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2M3 3l18 18" />
+                                </g>
+                            </svg>
+
+                        </div>
+                        <div class="text-part">
+                            <h2>Rejected QC</h2>
+                        </div>
+                    </div>
+                    <div class="count">
+                        {{rejected_files_agency.count}}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="col">
+            <a href="{% url 'rejected_files' %}"
+                class="card dash-status red-bg">
+                <div class="card-body">
+                    <div class="d-flex">
+                        <div class="icon-bg ">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24"
+                                height="24" viewBox="0 0 24 24">
+                                <g fill="none" stroke="currentColor"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round" stroke-width="2">
+                                    <path d="M15 3v4a1 1 0 0 0 1 1h4" />
+                                    <path
+                                        d="M17 17h-6a2 2 0 0 1-2-2V9m0-4a2 2 0 0 1 2-2h4l5 5v7c0 .294-.063.572-.177.823" />
+                                    <path
+                                        d="M16 17v2a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2M3 3l18 18" />
+                                </g>
+                            </svg>
+
+                        </div>
+                        <div class="text-part">
+                            <h2>Rejected QC</h2>
+                        </div>
+                    </div>
+                    <div class="count">
+                        {{d_r_files.count}}
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% endif %}
+
+    </div>
+
+    
+    {% endif %}
+
+   
+    {% if request.user.is_department or request.user.is_district_rgtr or request.user.is_digr %}
+
+    {% if request.user.is_department %}
+    <div class="row">
+            <div class="card">
+
+                <div class="card-body">
+                    <h5 class="card-title">Total QC <span>| All QC Count</span></h5>
+                    <div class="row">
+                        <div class="col">
+                            <table class="table table-bordered border-info">
+                                <tr>
+                                    <th class="text-center border border-primary">Total QC</th>
+                                    <th class="text-center border border-warning">Pending QC</th>
+                                    <th class="text-center border border-success">Approved QC</th>
+                                    <th class="text-center border border-danger">Rejected QC</th>                              
+                                    
+                                </tr>
+                                <tr>
+                                    
+                                    <td class="text-center border border-primary">{{ sro_self_total.count }}</td>
+                                    <td class="text-center border border-warning">{{ sro_self_pending.count }}</td>
+                                    <td class="text-center border border-success">{{ sro_self_approved.count }}</td>
+                                    <td class="text-center border border-danger">{{ sro_self_rejected.count }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+        
+    <div class="row">
+        <div class="card">
+
+            <div class="card-body">
+                <h5 class="card-title">Recent QC <span>| last 7 days</span></h5>
+                <div class="row">
+                    <div class="col">
+                        <form method="get" class="mt-3">
+                            <!-- Document Type Checkboxes -->
+                            <div class="row mb-3">
+                                <div class="col-6">
+                                    <label class="form-label">Document
+                                        Type:</label>
+                                    <div class="form-check form-check-inline">
+                                        <input
+                                            class="form-check-input"
+                                            type="checkbox"
+                                            name="document_type"
+                                            value="I"
+                                            id="docTypeI"
+                                            {% if 'I' in selected_document_types %}checked{% endif %}
+                                            onchange="toggleIndexTypeCheckboxes()" />
+                                        <label class="form-check-label"
+                                            for="docTypeI">I</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input
+                                            class="form-check-input"
+                                            type="checkbox"
+                                            name="document_type"
+                                            value="MTPR"
+                                            id="docTypeMTPR"
+                                            {% if 'MTPR' in selected_document_types %}checked{% endif %} />
+                                        <label class="form-check-label"
+                                            for="docTypeMTPR">MTPR</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input
+                                            class="form-check-input"
+                                            type="checkbox"
+                                            name="document_type"
+                                            value="RH"
+                                            id="docTypeRH"
+                                            {% if 'RH' in selected_document_types %}checked{% endif %} />
+                                        <label class="form-check-label"
+                                            for="docTypeRH">RH</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input
+                                            class="form-check-input"
+                                            type="checkbox"
+                                            name="document_type"
+                                            value="R"
+                                            id="docTypeR"
+                                            {% if 'R' in selected_document_types %}checked{% endif %} />
+                                        <label class="form-check-label"
+                                            for="docTypeR">R</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input
+                                            class="form-check-input"
+                                            type="checkbox"
+                                            name="document_type"
+                                            value="LO"
+                                            id="docTypeLO"
+                                            {% if 'LO' in selected_document_types %}checked{% endif %} />
+                                        <label class="form-check-label"
+                                            for="docTypeLO">LO</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input
+                                            class="form-check-input"
+                                            type="checkbox"
+                                            name="document_type"
+                                            value="MO"
+                                            id="docTypeMO"
+                                            {% if 'MO' in selected_document_types %}checked{% endif %} />
+                                        <label class="form-check-label"
+                                            for="docTypeMO">MO</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input
+                                            class="form-check-input"
+                                            type="checkbox"
+                                            name="document_type"
+                                            value="CO"
+                                            id="docTypeCO"
+                                            {% if 'CO' in selected_document_types %}checked{% endif %} />
+                                        <label class="form-check-label"
+                                            for="docTypeCO">CO</label>
+                                    </div>
+                                </div>
+                                <div class="col-5">
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <div class="row">
+                                                <div class="col">
+                                                    <label for="fromDate"
+                                                        class="form-label">From
+                                                        Date:</label>
+                                                </div>
+                                                <div class="col">
+                                                    <input
+                                                        type="date"
+                                                        name="from_date"
+                                                        class="form-control"
+                                                        id="fromDate"
+                                                        value="{{ request.GET.from_date|default:'' }}" />
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="row">
+                                                <div class="col">
+                                                    <label for="toDate"
+                                                        class="form-label">To Date:</label>
+                                                </div>
+                                                <div class="col">
+                                                    <input
+                                                        type="date"
+                                                        name="to_date"
+                                                        class="form-control"
+                                                        id="toDate"
+                                                        value="{{ request.GET.to_date|default:'' }}" />
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-1 text-end">
+                                    <button type="submit"
+                                        class="btn btn-primary">Filter</button>
+                                </div>
+                            </div>
+
+                            <!-- Index Type Checkboxes -->
+                            <div id="indexTypeContainer" class="mb-3"
+                                style="display: none;">
+                                <label class="form-label">Index Type:</label>
+                                <div class="form-check form-check-inline">
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        name="index_type"
+                                        value="1"
+                                        id="indexType1"
+                                        {% if '1' in selected_index_types %}checked{% endif %} />
+                                    <label class="form-check-label"
+                                        for="indexType1">1</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        name="index_type"
+                                        value="2"
+                                        id="indexType2"
+                                        {% if '2' in selected_index_types %}checked{% endif %} />
+                                    <label class="form-check-label"
+                                        for="indexType2">2</label>
+                                </div>
+                            </div>
+
+                            <!-- Date Range Fields -->
+
+                            <!-- Submit Button -->
+
+                        </form>
+
+                    </div>
+                </div>
+                
+                    <hr>
+                    
+                    <div class="row">
+                        {% if sro_dash_data %}
+                        
+                        <table
+                            class="table table-striped qc-record table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th colspan="2">SRO</th>
+                                    <th colspan="2">DR</th>
+                                    <th colspan="2">DIGR</th>
+                                </tr>
+                                <tr>
+                                    <td>&nbsp;</td>
+                                    <td>QC Record</td>
+                                    <td>Approved</td>
+                                    <td>QC Record</td>
+                                    <td>Approved</td>
+                                    <td>QC Record</td>
+                                    <td>Approved</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for date in sro_dash_data %}
+                                <tr>
+                                    <td>{{ date.uploaded_at__date}}</td>
+                                    <td>{{ date.qc_count }}</td>
+                                    <td>{{ date.sro_approved_count }}</td>
+
+                                    {% if dr_dash_data %}
+                                    <td>
+                                        {% for dr_data in dr_dash_data %}
+                                        {% if dr_data.uploaded_at__date == date.uploaded_at__date %}
+                                        {{ dr_data.qc_count }}
+                                        {% endif %}
+                                        {% endfor %}
+                                    </td>
+                                    <td>
+                                        {% for dr_data in dr_dash_data %}
+                                        {% if dr_data.uploaded_at__date == date.uploaded_at__date %}
+                                        {{ dr_data.dr_approved_count }}
+                                        {% endif %}
+                                        {% endfor %}
+                                    </td>
+                                    {% else %}
+                                    <td>0</td>
+                                    <td>0</td>
+                                    {% endif %}
+
+                                    {% if digr_dash_data %}
+                                    <td>
+                                        {% for digr_data in digr_dash_data %}
+                                        {% if digr_data.uploaded_at__date == date.uploaded_at__date %}
+                                        {{ digr_data.qc_count }}
+                                        {% endif %}
+                                        {% endfor %}
+                                    </td>
+                                    <td>
+                                        {% for digr_data in digr_dash_data %}
+                                        {% if digr_data.uploaded_at__date == date.uploaded_at__date %}
+                                        {{ digr_data.digr_approved_count }}
+                                        {% endif %}
+                                        {% endfor %}
+                                    </td>
+                                    {% else %}
+                                    <td>0</td>
+                                    <td>0</td>
+                                    {% endif %}
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        
+                        {% else %}
+                    <span class="text-center"> No data available.</span>
+                    {% endif %}
+
+                    </div>
+                    
+                   
+               
+
+            </div>
+
+        </div>
+
+    </div>
+    
+    {% endif %}
+    {% if request.user.is_admin %}
+    <div class="row">
+        <div class="col">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Vendor wise Data</h5>
+                    <div class="card">
+                        <div class="card-body">
+                            <table class="table table-bordered dark mt-3">
+                                <thead class="table-success">
+                                    <tr>
+                                        <th class="text-dark"> #</th>
+                                        <th class="text-dark"> Vendor</th>
+                                        <th class="text-primary">Uploaded</th>
+                                        <th class="text-success">Sent to SRO</th>
+                                        
+                                        <th class="text-success">Approved By SRO</th>
+                                        <th class="text-success">Approved By DR</th>
+                                        <th class="text-success">Approved By DIGR</th>
+                                        <th class="text-warning">Pending</th>
+                                        <th class="text-danger">Rejected</th>
+                                        <th class="text-info">View</th>
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for agency in agency_data %}
+                                    <tr>
+                                        <td class="text-dark"> {{ forloop.counter }}</td>
+                                        <td class="text-dark">{{ agency.name }}</td>
+                                        <td class="text-primary">{{ agency.total_uploaded }}</td>
+                                        <td class="text-success">{{ agency.sent_to_qc }}</td>
+                                    
+                                        <td class="text-success">{{ agency.approved_by_sro }}</td>
+                                        <td class="text-success">{{ agency.approved_by_dr }}</td>
+                                        <td class="text-success">{{ agency.approved_by_digr }}</td>
+                                        <td class="text-warning">{{ agency.pending }}</td>
+                                        <td class="text-danger">{{ agency.rejected }}</td>
+                                        <td class="text-info">
+                                            <a href="{% url 'agency_wise_report' agency.id %}" data-bs-toggle="tooltip" data-bs-placement="top" title="See Detailed Report for {{ agency.name }}">
+                                                <i class="bi bi-eye-fill"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="8" class="text-center">No data available</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+          </div>
+       
+    </div>
+    {% endif %}
+
+    <!-- <div class="row">
+
+
+        <div class="col-4">
+            <div class="row">
+                <div class="card">
+                    <div class="filter">
+                        <a class="icon" href="#" data-bs-toggle="dropdown"><i
+                                class="bi bi-three-dots"></i></a>
+                        <ul
+                            class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                            <li class="dropdown-header text-start">
+                                <h6>Filter</h6>
+                            </li>
+                            <li><a class="dropdown-item"
+                                    href="?filter=today">Today</a></li>
+                            <li><a class="dropdown-item"
+                                    href="?filter=month">This Month</a></li>
+                            <li><a class="dropdown-item"
+                                    href="?filter=year">This Year</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="card-body">
+                        <h5 class="card-title">Recent Activity <span>| {{ filter_option }}</span></h5>
+                        <div class="activity">
+                            {% for activity in activities %}
+                            <div class="activity-item d-flex">
+                                <div class="activite-label">
+                                    {{activity.timestamp|date:"b d, h:i A"|capfirst}}
+                                </div>
+                                <i
+                                    class='bi bi-circle-fill activity-badge text-{{ activity.category }} align-self-start'></i>
+                                <div class="activity-content">
+                                    {{ activity.action }}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div> -->
+
+</section>
+
+
+
+
+{% endblock %}

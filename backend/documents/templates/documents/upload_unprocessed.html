@@ -1,0 +1,43 @@
+{% extends 'users/index.html' %}
+{% load static %}
+
+{% block content %}
+<div class="pagetitle">
+    <h1>Scanned Files</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <!-- <li class="breadcrumb-item active">Elements</li> -->
+        </ol>
+    </nav>
+</div><!-- End Page Title -->
+
+<section class="section">
+    <div class="row">
+        <div class="col-lg-10">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Upload Scanned Files</h5>
+
+                    <!-- General Form Elements -->
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="row mb-3">
+                            <label for="inputFiles" class="col-sm-2 col-form-label">Choose Scanned Files</label>
+                            <div class="col-sm-10">
+                                <input class="form-control" type="file" id="formFiles" name="unprocessed_files" multiple>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-sm-10">
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            </div>
+                        </div>
+                    </form><!-- End General Form Elements -->
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- End Section -->
+
+{% endblock content %}

@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+  {% load static %}
+  <head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+    <title>Dashboard - Reports</title>
+    <meta content name="description">
+    <meta content name="keywords">
+
+    <!-- Favicons -->
+    <link href="{% static 'assets/img/iti.jpg' %}" rel="icon">
+    <link href="{% static 'assets/img/iti.jpg' %}"
+      rel="apple-touch-icon">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.gstatic.com" rel="preconnect">
+    <link
+      href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i"
+      rel="stylesheet">
+
+    <!-- Vendor CSS Files -->
+    <link
+      href="{% static 'assets/vendor/bootstrap/css/bootstrap.min.css' %}"
+      rel="stylesheet">
+    <link
+      href="{% static 'assets/vendor/bootstrap-icons/bootstrap-icons.css' %}"
+      rel="stylesheet">
+    <link href="{% static 'assets/vendor/boxicons/css/boxicons.min.css' %}"
+      rel="stylesheet">
+    <link href="{% static 'assets/vendor/quill/quill.snow.css' %}"
+      rel="stylesheet">
+    <link href="{% static 'assets/vendor/quill/quill.bubble.css' %}"
+      rel="stylesheet">
+    <link href="{% static 'assets/vendor/remixicon/remixicon.css' %}"
+      rel="stylesheet">
+    <link href="{% static 'assets/vendor/simple-datatables/style.css' %}"
+      rel="stylesheet">
+
+    <!-- Template Main CSS File -->
+    <link href="{% static 'assets/css/style.css' %}" rel="stylesheet">
+
+  </head>
+
+  <body>
+
+    <!-- ======= Header ======= -->
+    <header id="header" class="header fixed-top d-flex align-items-center">
+
+      <div class="d-flex align-items-center justify-content-between">
+        <a href
+          class="logo d-flex align-items-center">
+          <!-- <img src="{% static 'assets/img/iti.jpg' %}" alt=""> -->
+          <span class="d-none d-lg-block">ITI Scan</span>
+        </a>
+      </div>
+
+      <nav class="header-nav ms-auto">
+
+      </nav><!-- End Icons Navigation -->
+
+    </header><!-- End Header -->
+    <!-- ======= Sidebar ======= -->
+    <aside id="sidebar" class="sidebar">
+
+      <ul class="sidebar-nav" id="sidebar-nav">
+
+        <li class="nav-item">
+          <a class="nav-link " href="{% url 'reports' %}">
+            <i class="bi bi-grid"></i>
+            <span>Dashboard</span>
+          </a>
+        </li>
+        <!-- End Dashboard Nav -->
+
+      </ul>
+
+    </aside><!-- End Sidebar-->
+
+    <main id="main" class="main">
+
+      <section class="section dashboard">
+        <div class="pagetitle">
+          <h1>Scanning Section</h1>
+        </div>
+
+        <div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
+          <div class="alert alert-info alert-dismissible fade show" role="alert">
+            <h5>Active Centers yesterday ({{ active_sro_count }})</h5>
+            <ul>
+              {% for name in active_sro_names %}
+                <li>{{ name }}</li>
+              {% empty %}
+                <li>No active SRO's (Centers) yesterday.</li>
+              {% endfor %}
+            </ul>
+            
+          </div>
+          
+        </div>
+        <div class="row">
+
+          <!-- Left side columns -->
+
+          <div class="row">
+            <div class="col">
+              <div class="card info-card sales-card" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+                <div class="card-body">
+                  <h5 class="card-title">Active Centers <span>|
+                      Total Centers: {{ sro_count }}</span></h5>
+
+                  <div class="d-flex align-items-center">
+                    <div
+                      class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                      <i class="bi bi-tv"></i>
+                    </div>
+                    <div class="ps-3">
+                      <h6> {{active_sro_count}}</h6>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- Sales Card -->
+            <div class="col">
+              <div class="card info-card sales-card">
+                <div class="card-body">
+                  <h5 class="card-title">Total Pages Scanned <span>| Till
+                      Date</span></h5>
+
+                  <div class="d-flex align-items-center">
+                    <div
+                      class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                      <i class="bi bi-aspect-ratio"></i>
+                    </div>
+                    <div class="ps-3">
+                      <h6 class="count-up" data-target="{{ total_pages }}"></h6>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div><!-- End Sales Card -->
+
+            <div class="col">
+              <div class="card info-card sales-card">
+                <div class="card-body">
+                  <h5 class="card-title">Total Pages send to QC <span>| Till
+                      Date</span></h5>
+
+                  <div class="d-flex align-items-center">
+                    <div
+                      class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                      <i class="bi bi-aspect-ratio-fill"></i>
+                    </div>
+                    <div class="ps-3">
+                      <h6 class="count-up" data-target="{{ total_send_to_qc_pages }}">0</h6>
+
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <div class="col">
+              <div class="card info-card sales-card">
+                <div class="card-body">
+                  <h5 class="card-title">Total Approved Pages <span>| Till
+                      Date</span></h5>
+
+                  <div class="d-flex align-items-center">
+                    <div
+                      class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                      <i class="bi bi-card-checklist"></i>
+                    </div>
+                    <div class="ps-3">
+                      <h6 class="count-up" data-target="{{ total_approved_pages }}">0</h6>
+
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div><!-- End Left side columns -->
+        </div>
+
+
+        <hr>
+
+        <section class="section dashboard">
+          <div class="pagetitle">
+            <h1>Data Entry Section</h1>
+          </div>
+          <div class="row">
+
+            <!-- Left side columns -->
+
+            <div class="row">
+              <div class="col">
+                <div class="card info-card sales-card">
+                  <div class="card-body">
+                    <h5 class="card-title">Total Data Entry <span>|
+                        1st</span></h5>
+
+                    <div class="d-flex align-items-center">
+                      <div
+                        class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                        <i class="bi bi-card-text"></i>
+                      </div>
+                      <div class="ps-3">
+                        <h6 class="count-up" data-target="{{ firstDECounts }}">0</h6>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+
+              <!-- Sales Card -->
+              <div class="col">
+                <div class="card info-card sales-card">
+                  <div class="card-body">
+                    <h5 class="card-title">Total Data Entry<span>|
+                        2nd</span></h5>
+
+                    <div class="d-flex align-items-center">
+                      <div
+                        class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                        <i class="bi bi-card-checklist"></i>
+                      </div>
+                      <div class="ps-3">
+                        <h6 class="count-up" data-target="{{ secondDECounts }}">0</h6>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div><!-- End Sales Card -->
+
+              <div class="col">
+                <div class="card info-card sales-card">
+                  <div class="card-body">
+                    <h5 class="card-title">Total Re QC <span>|
+                        Completed</span></h5>
+
+                    <div class="d-flex align-items-center">
+                      <div
+                        class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                        <i class="bi bi-card-checklist"></i>
+                      </div>
+                      <div class="ps-3">
+                        <h6 class="count-up" data-target="{{ qcdeCounts }}"></h6>
+
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div><!-- End Left side columns -->
+          </div>
+
+          <div class="row">
+
+            <!-- Left side columns -->
+
+            <div class="row">
+              <div class="col">
+                <div class="card info-card sales-card">
+                  <div class="card-body">
+                    <h5 class="card-title">Total Allocated For QC <span>|
+                        SRO</span></h5>
+
+                    <div class="d-flex align-items-center">
+                      <div
+                        class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                        <i class="bi bi-bookshelf"></i>
+                      </div>
+                      <div class="ps-3">
+                        <h6 class="count-up" data-target="{{ totalSROReceived }}"></h6>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+
+              <!-- Sales Card -->
+              <div class="col">
+                <div class="card info-card sales-card">
+                  <div class="card-body">
+                    <h5 class="card-title text-success">Total Approved <span>|
+                        SRO</span></h5>
+
+                    <div class="d-flex align-items-center">
+                      <div
+                        class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                        <i class="bi bi-bookmark-check"></i>
+                      </div>
+                      <div class="ps-3">
+                        <h6 class="text-success count-up" data-target="{{ totalSROApproval }}"></h6>
+                        
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div><!-- End Sales Card -->
+
+              <div class="col">
+                <div class="card info-card sales-card">
+                  <div class="card-body">
+                    <h5 class="card-title text-danger">Total Rejected <span>|
+                        SRO</span></h5>
+
+                    <div class="d-flex align-items-center">
+                      <div
+                        class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                        <i class="bi bi-bookmark-x"></i>
+                      </div>
+                      <div class="ps-3">
+                        <h6 class="text-danger count-up" data-target="{{totalSRORejected}}"></h6>
+
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div><!-- End Left side columns -->
+          </div>
+
+          <div class="row">
+            <div class="col-lg-12">
+              <div class="card">
+                <div class="card-body">
+                  <div class="row align-items-center mb-3">
+                    <div class="col">
+                      <h5 class="card-title mb-0">Zone wise Report (Data
+                        Entry)</h5>
+                    </div>
+                  </div>
+
+                  <div class="card shadow">
+                    <div class="card-body">
+                      <!-- ✅ Wrap table in table-responsive for responsiveness -->
+                      <div class="table-responsive">
+                        <table class="table table-bordered mt-3" id="zone-progress-table">
+                          <thead class="table-success">
+                            <tr>
+                              <th>Zone</th>
+                              <th>Total Received Files</th>
+                              <th>Total Completed Files</th>
+                              <th>Progress</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {% if fileInfos %}
+                            {% for item in fileInfos %}
+                            <tr>
+                              <td>{{ item.zoneName }}</td>
+                              <td>{{ item.fileReceivedCount }}</td>
+                              <td>{{ item.fileCompletedCount }}</td>
+                              <td class="progress-cell"></td>
+                            </tr>
+                            {%empty%}
+                            
+                            <tr>
+                              <td colspan="4" class="text-center"> No data Available</td>
+                            </tr>
+                            {% endfor %}
+                            {% else %}
+                            <tr>
+                              <td>Chennai</td>
+                              <td>1220</td>
+                              <td>813</td>
+                              <td class="progress-cell"></td>
+                            </tr>
+                            <tr>
+                              <td>Madurai</td>
+                              <td>5383</td>
+                              <td>3248</td>
+                              <td class="progress-cell"></td>
+                            </tr>
+                            <tr>
+                              <td>Tanjore</td>
+                              <td>575</td>
+                              <td>0</td>
+                              <td class="progress-cell"></td>
+                            </tr>
+                            <tr>
+                              <td>Trichy</td>
+                              <td>4131</td>
+                              <td>2844</td>
+                              <td class="progress-cell"></td>
+                            </tr>
+                            {% endif %}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- <div class="row">
+            <div class="col-lg-12">
+              <div class="card">
+                <div class="card-body">
+                  <div class="row align-items-center mb-3">
+                    <div class="col">
+                      <h5 class="card-title mb-0">Zone wise Report (Data
+                        Entry)</h5>
+                    </div>
+                  </div>
+
+                  <div class="card shadow">
+                    <div class="card-body">
+                      <canvas id="zoneStackedBarChart" height="120"></canvas>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div> -->
+          <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+          <!-- ✅ Chart.js script -->
+          <!-- <script>
+            const ctx = document.getElementById('zoneStackedBarChart').getContext('2d');
+
+            const data = {
+              labels: ['Chennai', 'Madurai', 'Trichy'],
+              datasets: [
+                {
+                  label: 'Completed Data Entry',
+                  data: [90000, 70000, 98000],
+                  backgroundColor: '#198754', // Bootstrap green
+                  stack: 'Stack 0',
+                },
+                {
+                  label: 'Remaining Data Entry',
+                  data: [100000 - 90000, 90000 - 70000, 120000 - 98000],
+                  backgroundColor: '#dee2e6', // light gray
+                  stack: 'Stack 0',
+                },
+                {
+                  label: 'Progress (%)',
+                  data: [90, 77.78, 81.67],
+                  type: 'line',
+                  yAxisID: 'percentage',
+                  borderColor: 'rgba(0,0,0,0)',       // Make line invisible
+                  backgroundColor: 'rgba(0,0,0,0)',   // Make points invisible
+                  pointRadius: 0,                     // Hide data points
+                  pointHoverRadius: 0,               // Prevent dot on hover
+                  fill: false,
+                  tension: 0.3,
+                  hoverBackgroundColor: 'transparent'
+                }
+              ]
+            };
+
+            const config = {
+              type: 'bar',
+              data: data,
+              options: {
+                responsive: true,
+                interaction: {
+                  mode: 'index',
+                  intersect: false
+                },
+                stacked: true,
+                scales: {
+                  y: {
+                    beginAtZero: true,
+                    title: {
+                      display: true,
+                      text: 'Index II Count'
+                    }
+                  },
+                  percentage: {
+                    type: 'linear',
+                    position: 'right',
+                    beginAtZero: true,
+                    max: 100,
+                    title: {
+                      display: true,
+                      text: 'Progress (%)'
+                    },
+                    grid: {
+                      drawOnChartArea: false,
+                    }
+                  }
+                },
+                plugins: {
+                  title: {
+                    display: true,
+                    text: 'Zone-wise Report (Data Entry)'
+                  },
+                  tooltip: {
+                    callbacks: {
+                      label: function(context) {
+                        let value = context.raw;
+                        return context.dataset.label + ': ' + value + (context.dataset.yAxisID === 'percentage' ? '%' : '');
+                      }
+                    }
+                  }
+                }
+              }
+            };
+
+            new Chart(ctx, config);
+          </script> -->
+
+        </section>
+          </main>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const table = document.getElementById("zone-progress-table");
+    const rows = table.querySelectorAll("tbody tr");
+
+    rows.forEach((row) => {
+      const received = parseInt(row.cells[1].textContent.trim());
+      const completed = parseInt(row.cells[2].textContent.trim());
+      const percentage = received > 0 ? ((completed / received) * 100).toFixed(2) : "0.00";
+      row.querySelector(".progress-cell").textContent = `${percentage}%`;
+    });
+  });
+</script>
+    <!-- End #main -->
+      <script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const counters = document.querySelectorAll(".count-up");
+
+    counters.forEach(counter => {
+      const updateCount = () => {
+        const target = +counter.getAttribute("data-target");
+        const current = +counter.innerText.replace(",", "");
+        const increment = Math.ceil(target / 40);
+
+        if (current < target) {
+          counter.innerText = Math.min(current + increment, target).toLocaleString();
+          setTimeout(updateCount, 20);
+        } else {
+          counter.innerText = target.toLocaleString();
+        }
+      };
+
+      updateCount();
+    });
+  });
+</script>
+
+      <!-- Vendor JS Files -->
+      <script
+        src="{% static 'assets/vendor/apexcharts/apexcharts.min.js' %}"></script>
+      <script
+        src="{% static 'assets/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+      <script
+        src="{% static 'assets/vendor/chart.js/chart.umd.js' %}"></script>
+      <script
+        src="{% static 'assets/vendor/echarts/echarts.min.js' %}"></script>
+      <script src="{% static 'assets/vendor/quill/quill.js' %}"></script>
+      <script
+        src="{% static 'assets/vendor/simple-datatables/simple-datatables.js' %}"></script>
+      <script
+        src="{% static 'assets/vendor/tinymce/tinymce.min.js' %}"></script>
+      <script
+        src="{% static 'assets/vendor/php-email-form/validate.js' %}"></script>
+
+      <!-- Template Main JS File -->
+      <script src="{% static 'assets/js/main.js' %}"></script>
+      <!-- Template Main JS File -->
+
+    </body>
+
+  </html>

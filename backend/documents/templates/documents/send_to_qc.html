@@ -1,0 +1,98 @@
+{% extends 'users/index.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="pagetitle">
+    <h1>Uploaded Files</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Home</a></li>
+            <li class="breadcrumb-item">Uploaded</li>
+        </ol>
+    </nav>
+</div><!-- End Page Title -->
+
+<section class="section">
+    <div class="row">
+        <div class="col-lg-12">
+
+            <div class="card">
+                <div class="card-body">
+                    
+
+                    <div class="row">
+                        <div class="col">
+                            <h5 class="card-title">Uploaded Files : {{files.count}}</h5>
+                        </div>
+                        <div class="col">
+                            {% if files %}
+                            <form method="get" class="d-flex mt-3">
+                                <input
+                                    type="text"
+                                    name="q"
+                                    class="form-control"
+                                    placeholder="Search files..."
+                                    value="{{ search_query }}"
+                                />
+                                <button type="submit" class="btn btn-primary ms-2">Search</button>
+                            </form>
+                            {% endif %}
+        
+                        </div>
+                    </div>
+
+                    {% if messages %}
+                    
+                       
+                        {% for message in messages %}
+                        <div class="alert alert-primary alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        {% endfor %}
+                        
+                    {% endif %}
+                   
+
+                     <!-- Table with stripped rows -->
+                      {% if files %}
+                      <form method="POST" action="{% url 'send_to_qc' %}">
+                        {% csrf_token %}
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Sr No.</th>
+                                    <th>File</th>
+                                    <th>Queries</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for file in files %}
+                                    <tr>
+                                        <td>{{ forloop.counter }}</td>
+                                        <td>{{ file.filename }}</td>
+                                        <td>
+                                            <input name="query_{{ file.id }}" class="form-control" type="text" placeholder="Enter Query in 50 Chars only.">
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        <button class="btn btn-primary" type="submit">Send to Department</button>
+                    </form>
+                    <!-- Pagination Controls -->
+                    
+                    {% else %}
+                    <span>No Files Found</span>
+                    {% endif %}
+                    <!-- End Table with stripped rows -->
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+{% endblock content %}

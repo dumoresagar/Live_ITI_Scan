@@ -1,0 +1,249 @@
+{% extends 'users/index.html' %}
+{% load static %}
+
+{% block content %}
+<div class="pagetitle">
+    <h1>Files Report for {{user.get_full_name }}</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">Home</li>
+            <li class="breadcrumb-item">Report</li>
+            <li class="breadcrumb-item active">{{user.get_full_name }}</li>
+        </ol>
+    </nav>
+</div><!-- End Page Title -->
+
+{% if messages %}
+{% for message in messages %}
+<div class="alert alert-primary alert-dismissible fade show" role="alert">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"
+        aria-label="Close"></button>
+</div>
+{% endfor %}
+{% endif %}
+
+<section class="section">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row align-items-center mb-3">
+                        <div class="col-md-3">
+                            <h5 class="card-title mb-0">Total : {{ total }}</h5>
+                        </div>
+
+                        <div class="col-md-9">
+                            <form method="get"
+                                class="row gx-2 align-items-center">
+                                <div class="col-auto">
+                                    <select name="admin_approved"
+                                        class="form-select">
+                                        <option value>Admin Approved</option>
+                                        <option value="true" {% if request.GET.admin_approved == 'true' %}selected{% endif %}>✅ Yes</option>
+                                        <option value="false" {% if request.GET.admin_approved == 'false' %}selected{% endif %}>❌
+                                            No</option>
+                                    </select>
+                                </div>
+                                <div class="col-auto">
+                                    <select name="dept_approved"
+                                        class="form-select">
+                                        <option value>SR Approved</option>
+                                        <option value="true" {% if request.GET.dept_approved == 'true' %}selected{% endif %}>✅ Yes</option>
+                                        <option value="false" {% if request.GET.dept_approved == 'false' %}selected{% endif %}>❌ No</option>
+                                    </select>
+                                </div>
+                                <div class="col-auto">
+                                    <select name="dr_approved"
+                                        class="form-select">
+                                        <option value>DR Approved</option>
+                                        <option value="true" {% if request.GET.dr_approved == 'true' %}selected{% endif %}>✅ Yes</option>
+                                        <option value="false" {% if request.GET.dr_approved == 'false' %}selected{% endif %}>❌ No</option>
+                                    </select>
+                                </div>
+                                <div class="col-auto">
+                                    <select name="digr_approved"
+                                        class="form-select">
+                                        <option value>DIGR Approved</option>
+                                        <option value="true" {% if request.GET.digr_approved == 'true' %}selected{% endif %}>✅ Yes</option>
+                                        <option value="false" {% if request.GET.digr_approved == 'false' %}selected{% endif %}>❌ No</option>
+                                    </select>
+                                </div>
+                                <div class="col-auto">
+                                    <input type="date" name="start_date"
+                                        class="form-control"
+                                        value="{{ request.GET.start_date }}">
+                                </div>
+                                <div class="col-auto">
+                                    <input type="date" name="end_date"
+                                        class="form-control"
+                                        value="{{ request.GET.end_date }}">
+                                </div>
+                                <div class="col-auto">
+                                    <button type="submit"
+                                        class="btn btn-primary">Filter</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Table with stripped rows -->
+                    <form method="post"
+                        action="{% url 'agency_user_wise_data_download' %}">
+                        {% csrf_token %}
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="table-responsive"
+                                    style="max-height: 500px; overflow-y: auto;">
+                                    <table class="table table-bordered mt-3">
+                                        <thead
+                                            class="table-success text-center position-sticky top-0">
+                                            <tr>
+                                                <th><input type="checkbox"
+                                                        id="selectAll"
+                                                        data-bs-toggle="tooltip"
+                                                        data-bs-placement="top"
+                                                        title="Select all"></th>
+                                                <th>#</th>
+                                                <th>Filename</th>
+                                                <th>Date</th>
+                                                <th>Page Count</th>
+                                                <th class="text-center">QC <span
+                                                        class="text-success">Approved
+                                                    </span> / <span
+                                                        class="text-danger">Rejected</span></th>
+                                                <th>SR <span
+                                                        class="text-success">Approved
+                                                    </span> / <span
+                                                        class="text-danger">Rejected</span></th>
+                                                <th>DR <span
+                                                        class="text-success">Approved
+                                                    </span> / <span
+                                                        class="text-danger">Rejected</span></th>
+                                                <th>DIGR <span
+                                                        class="text-success">Approved
+                                                    </span> / <span
+                                                        class="text-danger">Rejected</span></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for file in files %}
+                                            <tr class="text-center">
+                                                <td><input type="checkbox"
+                                                        name="file_ids"
+                                                        value="{{ file.id }}"></td>
+                                                <td>{{ forloop.counter }}</td>
+                                                <td class="text-start">{{ file.filename }}</td>
+                                                <td class="text-start">{{ file.uploaded_at }}</td>
+                                                <td>{{file.page_count|default:"-" }}</td>
+                                                <td>
+                                                    {% if file.admin_approved %}
+                                                    ✅
+                                                    {% elif file.admin_approved is not None %}
+                                                    ❌
+                                                    {% else %}
+                                                    Pending
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    {% if file.dept_approved %}
+                                                    ✅
+                                                    {% elif file.dept_approved is not None %}
+                                                    ❌
+                                                    {% else %}
+                                                    Pending
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    {% if file.district_rgtr_approved %}
+                                                    ✅
+                                                    {% elif file.district_rgtr_approved is not None %}
+                                                    ❌
+                                                    {% else %}
+                                                    Pending
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    {% if file.digr_approved %}
+                                                    ✅
+                                                    {% elif file.digr_approved is not None %}
+                                                    ❌
+                                                    {% else %}
+                                                    Pending
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                            {% empty %}
+                                            <tr>
+                                                <td colspan="8"
+                                                    class="text-center">No files
+                                                    found.</td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                        <tfoot
+                                            class="table-info position-sticky bottom-0">
+                                            <th colspan="2"
+                                                class="text-end">Total : </th>
+                                            <th
+                                                class="text-center">{{total}}</th>
+                                            <th class="text-center"></th>
+                                            <th class="text-center">{{ summary.total_pages }}</th>
+                                            <th class="text-center">
+                                                <span class="text-success">
+                                                    {{summary.approved_admin }}
+                                                </span>
+                                                 / 
+                                                 <span class="text-danger">
+                                                    {{summary.rejected_admin }}
+                                                </span>
+                                            </th>
+                                            <th class="text-center"><span
+                                                    class="text-success">
+                                                    {{summary.approved_dept }}
+                                                </span>
+                                                 / 
+                                                <span class="text-danger">
+                                                    {{ summary.rejected_dept }}
+                                                </span>
+                                            </th>
+                                            <th class="text-center">
+                                                <span class="text-success">
+                                                    {{ summary.approved_dr }}
+                                                </span>
+                                                 / 
+                                                 <span class="text-danger">
+                                                    {{ summary.rejected_dr }}
+                                                </span>
+                                            </th>
+                                            <th class="text-center">
+                                                <span class="text-success">
+                                                    {{summary.approved_digr }}
+                                                </span>
+                                                 / 
+                                                 <span class="text-danger">
+                                                    {{ summary.rejected_digr }}
+                                                </span>
+                                            </th>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-danger">Download
+                            Selected Files (ZIP)</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    document.getElementById("selectAll").addEventListener("change", function () {
+        const checkboxes = document.querySelectorAll("input[name='file_ids']");
+        checkboxes.forEach(cb => cb.checked = this.checked);
+    });
+</script>
+
+{% endblock content %}

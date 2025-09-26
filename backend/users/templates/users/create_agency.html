@@ -1,0 +1,188 @@
+{% extends 'users/index.html' %}
+{% load static %}
+
+{% block content %}
+    <div class="pagetitle">
+        <h1>Create Agency</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                <li class="breadcrumb-item">Agency</li>
+                <li class="breadcrumb-item active">Create</li>
+            </ol>
+        </nav>
+    </div><!-- End Page Title -->
+
+    <section class="section">
+        <div class="card">
+            
+            <div class="card-body">
+                <h5 class="card-title">Create Agency</h5>
+                <form method="post" enctype="multipart/form-data">
+                    <!-- Added enctype -->
+                    {% csrf_token %}
+
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-group mb-3">
+                                <label for="name" class="col-form-label">Name</label>
+                                <input type="text" class="form-control"
+                                    id="name" name="name"
+                                    placeholder="Enter name" required>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group mb-3">
+                                <label for="contact_number" class="col-form-label">Contact</label>
+                                <input type="text" class="form-control"
+                                    id="contact_number" name="contact_number"
+                                    placeholder="Enter contact number" required>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <label class="col-sm-2 col-form-label">Office</label>
+                            <div class="col-sm-10">
+                                <select class="form-select" name="office" aria-label="Default select example">
+                                    <option value="" selected>Open this select office</option>
+                                    {% for office in offices %}
+                                        <option value="{{office.id}}">{{office.office_name}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contact and Department fields -->
+                    <div class="row">
+                        <div class="col">
+                                <label for="address" class="col-form-label">Address</label>
+                                <textarea type="text" class="form-control"
+                                    id="address" name="address"
+                                    placeholder="Enter address" required></textarea>
+                      
+                        </div>
+            
+                        
+                    </div>
+
+
+                    <button type="submit" class="btn btn-primary mt-3">Create Agency</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    function previewImage(event) {
+        const file = event.target.files[0];
+        const preview = document.getElementById('avatarPreview');
+
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                preview.style.display = 'block';  // Show the image preview
+            }
+            reader.readAsDataURL(file);
+        } else {
+            preview.src = '#';
+            preview.style.display = 'none';  // Hide the image preview if no file is selected
+        }
+    }
+    </script>
+
+ 
+</section>
+<script>
+    function toggleDistrictDropdown() {
+        var districtCheckbox = document.getElementById('is_district_rgtr');
+        var districtDiv = document.getElementById('district_div');
+        districtDiv.style.display = districtCheckbox.checked ? 'block' : 'none';
+    }
+
+    function toggleZoneDropdown() {
+        var digrCheckbox = document.getElementById('is_digr');
+        var zoneDiv = document.getElementById('zone_div');
+        zoneDiv.style.display = digrCheckbox.checked ? 'block' : 'none';
+    }
+</script>
+<script>
+    function toggleDepartmentCheckbox() {
+        var departmentCheckbox = document.getElementById('is_department');
+        var districtCheckbox = document.getElementById('is_district_rgtr');
+        var digrCheckbox = document.getElementById('is_digr');
+        var igrCheckbox = document.getElementById('is_igr');
+        
+        // Disable/Enable other checkboxes based on 'Is Department' checkbox state
+        var disable = departmentCheckbox.checked;
+        
+        districtCheckbox.disabled = disable;
+        digrCheckbox.disabled = disable;
+        igrCheckbox.disabled = disable;
+        
+        // If department is checked, hide the district and zone dropdowns
+        toggleDistrictDropdown();
+        toggleZoneDropdown();
+    }
+
+    function toggleDistrictCheckbox() {
+        var districtCheckbox = document.getElementById('is_district_rgtr');
+        var departmentCheckbox = document.getElementById('is_department');
+        var digrCheckbox = document.getElementById('is_digr');
+        var igrCheckbox = document.getElementById('is_igr');
+        
+        // Disable/Enable other checkboxes based on 'Is District Admin' checkbox state
+        var disable = districtCheckbox.checked;
+        
+        departmentCheckbox.disabled = disable;
+        digrCheckbox.disabled = disable;
+        igrCheckbox.disabled = disable;
+
+        // Show/hide district dropdown
+        toggleDistrictDropdown();
+    }
+
+    function toggleDigrCheckbox() {
+        var digrCheckbox = document.getElementById('is_digr');
+        var departmentCheckbox = document.getElementById('is_department');
+        var districtCheckbox = document.getElementById('is_district_rgtr');
+        var igrCheckbox = document.getElementById('is_igr');
+        
+        // Disable/Enable other checkboxes based on 'Is Deputy IGR' checkbox state
+        var disable = digrCheckbox.checked;
+        
+        departmentCheckbox.disabled = disable;
+        districtCheckbox.disabled = disable;
+        igrCheckbox.disabled = disable;
+
+        // Show/hide zone dropdown
+        toggleZoneDropdown();
+    }
+
+    function toggleIgrCheckbox() {
+        var igrCheckbox = document.getElementById('is_igr');
+        var departmentCheckbox = document.getElementById('is_department');
+        var districtCheckbox = document.getElementById('is_district_rgtr');
+        var digrCheckbox = document.getElementById('is_digr');
+        
+        // Disable/Enable other checkboxes based on 'Is IGR' checkbox state
+        var disable = igrCheckbox.checked;
+        
+        departmentCheckbox.disabled = disable;
+        districtCheckbox.disabled = disable;
+        digrCheckbox.disabled = disable;
+    }
+
+    function toggleDistrictDropdown() {
+        var districtCheckbox = document.getElementById('is_district_rgtr');
+        var districtDiv = document.getElementById('district_div');
+        districtDiv.style.display = districtCheckbox.checked ? 'block' : 'none';
+    }
+
+    function toggleZoneDropdown() {
+        var digrCheckbox = document.getElementById('is_digr');
+        var zoneDiv = document.getElementById('zone_div');
+        zoneDiv.style.display = digrCheckbox.checked ? 'block' : 'none';
+    }
+</script>
+{% endblock content %}

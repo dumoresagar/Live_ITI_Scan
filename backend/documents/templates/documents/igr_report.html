@@ -1,0 +1,373 @@
+{% extends 'users/index.html' %}
+{% load static %}
+
+{% block content %}
+<div class="pagetitle">
+    <h1>Reports</h1>
+</div>
+
+<section class="section">
+    <div class="row">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <!-- Pills navigation -->
+                <ul class="nav nav-tabs mb-3 mt-3" id="pills-tab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="pills-sro-tab" data-bs-toggle="pill" data-bs-target="#pills-sro" type="button" role="tab">SRO Reports</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="pills-district-tab" data-bs-toggle="pill" data-bs-target="#pills-district" type="button" role="tab">District Reports</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="pills-zone-tab" data-bs-toggle="pill" data-bs-target="#pills-zone" type="button" role="tab">Zone Reports</button>
+                    </li>
+                </ul>
+
+                <!-- Pills content -->
+                <div class="tab-content" id="pills-tabContent">
+
+                    <!-- SRO Reports -->
+                    <div class="tab-pane fade show active" id="pills-sro" role="tabpanel">
+                        <form method="GET" id="sro-filter-form" class="mb-3">
+                            <input type="hidden" name="active_tab" value="pills-sro">
+                            <div class="d-flex justify-content-between align-items-end flex-wrap">
+                                <h5 class="card-title mb-0">SRO Reports</h5> 
+                                <div class="d-flex gap-2 align-items-end flex-wrap">
+                                    <div>
+                                        <label for="start_date" class="form-label mb-0">Start Date:</label>
+                                        <input type="date" id="start_date" name="start_date" value="{{ start_date }}" class="form-control">
+                                    </div>
+                                    <div>
+                                        <label for="end_date" class="form-label mb-0">End Date:</label>
+                                        <input type="date" id="end_date" name="end_date" value="{{ end_date }}" class="form-control">
+                                    </div>
+                                    <div>
+                                        <label for="sro_name" class="form-label mb-0">SRO Name:</label>
+                                        <select id="sro_name" name="sro_name" class="form-select">
+                                            <option value="">All</option>
+                                            {% for sro in sro_list %}
+                                            <option value="{{ sro }}" {% if sro_name == sro %}selected{% endif %}>{{ sro }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary"><i class="bi bi-filter"></i> Filter</button>
+                                    <button type="button" class="btn btn-secondary" onclick="clearFilters(this.form)">
+                                        <i class="bi bi-x-circle"></i> Filter
+                                    </button>
+                                    <button type="button" class="btn btn-success" onclick="downloadReport('sro')">
+                                        <i class="bi bi-download"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+
+                        <div class="card shadow">
+                            <div class="card-body">
+                                <div class="table-container mt-3" style="max-height: 550px; overflow-y: auto;">
+                                    <table class="table table-bordered">
+                                      <thead class="table-success position-sticky top-0" style="z-index: 1;">
+                                        <tr>
+                                          <th>#</th>
+                                          <th>SRO Name</th>
+                                          <th>Total Docs Sent to QC</th>
+                                          <th>T. D. Sent to QC (pages)</th>
+                                          <th>Pending Docs</th>
+                                          <th>Pending Docs (pages)</th>
+                                          <th>Approved Docs</th>
+                                          <th>Approved Docs (pages)</th>
+                                          <th>Rejected Docs</th>
+                                          <th>Rejected Docs (pages)</th>
+                                        </tr>
+                                      </thead>
+                                      <tbody>
+                                        {% for row in sro_data %}
+                                        <tr>
+                                            <td>{{forloop.counter}}</td>
+                                            <td>{{ row.sro_name }}</td>
+                                            <td>{{ row.total_qc }}</td>
+                                            <td>{{ row.send_to_qc_pages }}</td>
+                                            <td>{{ row.pending }}</td>
+                                            <td>{{row.pending_pages}}</td>
+                                            <td class="text-success fw-bold">{{ row.approved }}</td>
+                                            <td>{{row.approved_pages}}</td>
+                                            <td class="text-danger fw-bold">{{ row.rejected }}</td>
+                                            <td>{{row.rejected_pages}}</td>
+                                        </tr>
+                                        {% empty %}
+                                        <tr>
+                                          <td colspan="10" class="text-center text-muted">No data available</td>
+                                        </tr>
+                                        {% endfor %}
+                                      </tbody>
+                                      <tfoot class="table-info position-sticky bottom-0">
+                                        <tr>
+                                            <th colspan="2" class="text-end">Total:</th>
+                                            <th>{{ sro_totals.total_qc }}</th>
+                                            <th>{{ sro_totals.send_to_qc_pages }}</th>
+                                            <th>{{ sro_totals.pending_count }}</th>
+                                            <th>{{ sro_totals.pending_pages }}</th>
+                                            <th class="text-success fw-bold">{{ sro_totals.approved_count }}</th>
+                                            <th>{{ sro_totals.approved_pages|default:"0" }}</th>
+                                            <th class="text-danger fw-bold">{{ sro_totals.rejected_count }}</th>
+                                            <th>{{ sro_totals.rejected_pages }}</th>
+                                        </tr>
+                                    </tfoot>
+                                    </table>
+                                  </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- District Reports -->
+                    <div class="tab-pane fade" id="pills-district" role="tabpanel">
+                        <form method="GET" id="district-filter-form" class="mb-3">
+                            <input type="hidden" name="active_tab" value="pills-district">
+                            <div class="d-flex justify-content-between align-items-end flex-wrap">
+                                <h5 class="card-title mb-0">District Reports</h5>
+                                <div class="d-flex gap-2 align-items-end flex-wrap">
+                                    <div>
+                                        <label for="start_date" class="form-label mb-0">Start Date:</label>
+                                        <input type="date" id="start_date" name="start_date" value="{{ start_date }}" class="form-control">
+                                    </div>
+                                    <div>
+                                        <label for="end_date" class="form-label mb-0">End Date:</label>
+                                        <input type="date" id="end_date" name="end_date" value="{{ end_date }}" class="form-control">
+                                    </div>
+                                    <div>
+                                        <label for="district_name" class="form-label mb-0">District Name:</label>
+                                        <select id="district_name" name="district_name" class="form-select">
+                                            <option value="">All</option>
+                                            {% for district in district_list %}
+                                            <option value="{{ district }}" {% if district_name == district %}selected{% endif %}>{{ district }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary"><i class="bi bi-filter"></i> Filter</button>
+                                    <button type="button" class="btn btn-secondary" onclick="clearFilters(this.form)">
+                                        <i class="bi bi-x-circle"></i> Filter
+                                    </button>
+                                    <button type="button" class="btn btn-success" onclick="downloadReport('district')">
+                                        <i class="bi bi-download"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                        <div class="card shadow">
+                            <div class="card-body">
+                                <div class="table-responsive mt-3">
+                                    <table class="table table-bordered">
+                                        <thead class="table-success">
+                                            <tr>
+                                                <th>#</th>
+                                                <th>District</th>
+                                                <th>Total Docs Sent to QC</th>
+                                                <th>T. D. Sent to QC (pages)</th>
+                                                <th>Pending Docs</th>
+                                                <th>Pending Docs (pages)</th>
+                                                <th>Approved Docs</th>
+                                                <th>Approved Docs (pages)</th>
+                                                <th>Rejected Docs</th>
+                                                <th>Rejected Docs (pages)</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for row in district_data %}
+                                                {% if row.total_count > 0 %}
+                                                    <tr>
+                                                        <td>{{forloop.counter}}</td>
+                                                        <td>{{ row.district }}</td>
+                                                        <td>{{ row.total_count }}</td>
+                                                        <td>{{ row.send_to_qc_pages }}</td>
+                                                        <td>{{ row.pending }}</td>
+                                                        <td>{{ row.pending_pages }}</td>
+                                                        <td class="text-success fw-bold">{{ row.approved }}</td>
+                                                        <td>{{ row.approved_pages }}</td>
+                                                        <td class="text-danger fw-bold">{{ row.rejected }}</td>
+                                                        <td>{{ row.rejected_pages }}</td>
+                                                    </tr>
+                                                {% endif %}
+                                            {% empty %}
+                                            <tr>
+                                                <td colspan="6" class="text-center text-muted">No data available</td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                        <tfoot class="table-info position-sticky bottom-0">
+                                            <tr>
+                                                <th colspan="2" class="text-end">Total:</th>
+                                                <th>{{ district_totals.total_count }}</th>
+                                                <th>{{ district_totals.send_to_qc_pages }}</th>
+                                                <th>{{ district_totals.pending_count }}</th>
+                                                <th>{{ district_totals.pending_pages }}</th>
+                                                <th class="text-success fw-bold">{{ district_totals.approved_count }}</th>
+                                                <th>{{ district_totals.approved_pages }}</th>
+                                                <th class="text-danger fw-bold">{{ district_totals.rejected_count }}</th>
+                                                <th>{{ district_totals.rejected_pages }}</th>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Zone Reports -->
+                    <div class="tab-pane fade" id="pills-zone" role="tabpanel">
+                        <form method="GET" id="zone-filter-form" class="mb-3">
+                            <input type="hidden" name="active_tab" value="pills-zone">
+                            <div class="d-flex justify-content-between align-items-end flex-wrap">
+                                <h5 class="card-title mb-0">Zone Reports</h5>
+                                <div class="d-flex gap-2 align-items-end flex-wrap">
+                                    <div>
+                                        <label for="start_date" class="form-label mb-0">Start Date:</label>
+                                        <input type="date" id="start_date" name="start_date" value="{{ start_date }}" class="form-control">
+                                    </div>
+                                    <div>
+                                        <label for="end_date" class="form-label mb-0">End Date:</label>
+                                        <input type="date" id="end_date" name="end_date" value="{{ end_date }}" class="form-control">
+                                    </div>
+                                    <div>
+                                        <label for="zone_name" class="form-label mb-0">Zone Name:</label>
+                                        <select id="zone_name" name="zone_name" class="form-select">
+                                            <option value="">All</option>
+                                            {% for zone in zone_list %}
+                                            <option value="{{ zone }}" {% if zone_name == zone %}selected{% endif %}>{{ zone }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary"><i class="bi bi-filter"></i> Filter</button>
+                                    <button type="button" class="btn btn-secondary" onclick="clearFilters(this.form)">
+                                        <i class="bi bi-x-circle"></i> Filter
+                                    </button>
+                                    <button type="button" class="btn btn-success" onclick="downloadReport('zone')">
+                                        <i class="bi bi-download"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                        <div class="card shadow">
+                            <div class="card-body">
+                                <div class="table-responsive mt-3">
+                                    <table class="table table-bordered">
+                                        <thead class="table-success">
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Zone</th>
+                                                <th>Total Docs Sent to QC</th>
+                                                <th>T. D. Sent to QC (pages)</th>
+                                                <th>Pending Docs</th>
+                                                <th>Pending Docs (pages)</th>
+                                                <th>Approved Docs</th>
+                                                <th>Approved Docs (pages)</th>
+                                                <th>Rejected Docs</th>
+                                                <th>Rejected Docs (pages)</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="table-body-scroll">
+                                            {% for row in zone_data %}
+                                                {% if row.total_count > 0 %}
+                                                    <tr>
+                                                        <td>{{ row.s_no }}</td>  {# Use backend-provided serial number #}
+                                                        <td>{{ row.zone }}</td>
+                                                        <td>{{ row.total_count }}</td>
+                                                        <td>{{ row.send_to_qc_pages }}</td>
+                                                        <td>{{ row.pending }}</td>
+                                                        <td>{{ row.pending_pages }}</td>
+                                                        <td class="text-success fw-bold">{{ row.approved }}</td>
+                                                        <td>{{ row.approved_pages }}</td>
+                                                        <td class="text-danger fw-bold">{{ row.rejected }}</td>
+                                                        <td>{{ row.rejected_pages }}</td>
+                                                    </tr>
+                                                {% endif %}
+                                            {% empty %}
+                                            <tr>
+                                                <td colspan="6" class="text-center text-muted">No data available</td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                        <tfoot class="table-info position-sticky bottom-0">
+                                            <tr>
+                                                <th colspan="2" class="text-end">Total:</th>
+                                                <th>{{ zone_totals.total_count }}</th>
+                                                <th>{{ zone_totals.send_to_qc_pages }}</th>
+                                                <th>{{ zone_totals.pending_count }}</th>
+                                                <th>{{ zone_totals.pending_pages }}</th>
+                                                <th class="text-success fw-bold">{{ zone_totals.approved_count }}</th>
+                                                <th>{{ zone_totals.approved_pages }}</th>
+                                                <th class="text-danger fw-bold">{{ zone_totals.rejected_count }}</th>
+                                                <th>{{ zone_totals.rejected_pages }}</th>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    function clearFilters(form) {
+        // Clear all input/select fields except the hidden active_tab
+        Array.from(form.elements).forEach(el => {
+            if (el.name !== 'active_tab') {
+                if (el.tagName === 'SELECT' || el.tagName === 'INPUT') {
+                    el.value = '';
+                }
+            }
+        });
+    
+        // Re-submit the form with only active_tab (so it stays on the same tab)
+        form.submit();
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        // Preserve active tab across requests
+        const urlParams = new URLSearchParams(window.location.search);
+        const activeTab = urlParams.get("active_tab");
+    
+        if (activeTab) {
+            const tabButton = document.querySelector(`[data-bs-target="#${activeTab}"]`);
+            if (tabButton) {
+                new bootstrap.Tab(tabButton).show();
+            }
+        }
+    
+        // Handle filters dynamically
+        document.querySelectorAll("form").forEach((form) => {
+            form.addEventListener("submit", function (event) {
+                const activeTabId = document.querySelector(".nav-tabs .active").getAttribute("data-bs-target").substring(1);
+                this.querySelector("input[name='active_tab']").value = activeTabId; // Set active tab in form
+            });
+        });
+    
+    });
+    
+    // Download Report Function (Fixes Selection Issue)
+    function downloadReport(type) {
+        let form;
+        if (type === "sro") {
+            form = document.getElementById("sro-filter-form");
+            form.action = "{% url 'download_sro_report' %}";
+        } else if (type === "district") {
+            form = document.getElementById("district-filter-form");
+            form.action = "{% url 'download_district_report' %}";
+        } else if (type === "zone") {
+            form = document.getElementById("zone-filter-form");
+            form.action = "{% url 'download_zone_report' %}";
+        }
+    
+        if (form) {
+            form.submit();
+        } else {
+            console.error("Form not found for type:", type);
+        }
+    }
+    </script>
+    
+
+{% endblock %}

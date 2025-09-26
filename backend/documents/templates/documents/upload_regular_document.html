@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Upload Regular Document Register</title>
+</head>
+<body>
+    <h2>Upload Regular Document Register Excel</h2>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label for="file">Choose Excel File:</label>
+        <input type="file" name="file" accept=".xlsx, .xls">
+        <button type="submit">Upload</button>
+    </form>
+</body>
+</html>

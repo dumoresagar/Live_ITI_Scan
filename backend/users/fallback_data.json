@@ -1,0 +1,87 @@
+{
+  "firstDECounts": 376414,
+  "secondDECounts": 118495,
+  "qcdeCounts": 8336,
+  "totalSROReceived": 7536,
+  "totalSROApproval": 74,
+  "totalSRORejected": 6,
+  "fileInfos": [
+    {
+      "zoneName": "Chengalpattu",
+      "districtName": "",
+      "sroName": "",
+      "fileReceivedCount": 0,
+      "fileCompletedCount": 0
+    },
+    {
+      "zoneName": "Chennai",
+      "districtName": "",
+      "sroName": "",
+      "fileReceivedCount": 1220,
+      "fileCompletedCount": 804
+    },
+    {
+      "zoneName": "Coimbatore",
+      "districtName": "",
+      "sroName": "",
+      "fileReceivedCount": 0,
+      "fileCompletedCount": 0
+    },
+    {
+      "zoneName": "Cuddalore",
+      "districtName": "",
+      "sroName": "",
+      "fileReceivedCount": 0,
+      "fileCompletedCount": 0
+    },
+    {
+      "zoneName": "Madurai",
+      "districtName": "",
+      "sroName": "",
+      "fileReceivedCount": 4878,
+      "fileCompletedCount": 2175
+    },
+    {
+      "zoneName": "Ramanatahapuram",
+      "districtName": "",
+      "sroName": "",
+      "fileReceivedCount": 0,
+      "fileCompletedCount": 0
+    },
+    {
+      "zoneName": "Salem",
+      "districtName": "",
+      "sroName": "",
+      "fileReceivedCount": 0,
+      "fileCompletedCount": 0
+    },
+    {
+      "zoneName": "Tanjore",
+      "districtName": "",
+      "sroName": "",
+      "fileReceivedCount": 0,
+      "fileCompletedCount": 0
+    },
+    {
+      "zoneName": "Thirunelveli",
+      "districtName": "",
+      "sroName": "",
+      "fileReceivedCount": 0,
+      "fileCompletedCount": 0
+    },
+    {
+      "zoneName": "Trichy",
+      "districtName": "",
+      "sroName": "",
+      "fileReceivedCount": 4131,
+      "fileCompletedCount": 2757
+    },
+    {
+      "zoneName": "Vellore",
+      "districtName": "",
+      "sroName": "",
+      "fileReceivedCount": 0,
+      "fileCompletedCount": 0
+    }
+  ]
+}

@@ -1,0 +1,110 @@
+{% extends 'users/index.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="pagetitle">
+    <h1>Zone Wise Report</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Home</a></li>
+            <li class="breadcrumb-item">Report</li>
+        </ol>
+    </nav>
+</div><!-- End Page Title -->
+
+<section class="section">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-body">
+                  <div class="row align-items-center mb-3">
+                    <div class="col-auto">
+                      <h5 class="card-title mb-0">All Present Zone wise Report</h5>
+                    </div>
+                  
+                    <div class="col text-end">
+                      <form method="get" class="d-inline-flex align-items-center" style="gap: 0.5rem;">
+                        <input
+                          type="text"
+                          name="zone"
+                          class="form-control"
+                          placeholder="Search Zone…"
+                          value="{{ zone_filter }}"
+                          style="max-width: 250px;"
+                        >
+                  
+                        <button class="btn btn-primary" type="submit">
+                          Filter
+                        </button>
+                  
+                        <a
+                          class="btn btn-success"
+                          href="?{% if zone_filter %}zone={{ zone_filter }}&{% endif %}export=excel"
+                        >
+                          <i class="bi bi-download"></i>
+                        </a>
+                      </form>
+                    </div>
+                  </div>
+
+                  <div class="card shadow">
+                    <div class="card-body">
+                      <table class="table table-bordered mt-3">
+                        <thead class="table-success">
+                          <tr>
+                            <th rowspan="2" class="text-center"><h1><span class="badge bg-info">Zone</span></h1></th>
+                            <th colspan="2" class="text-center"><span class="badge bg-primary">QC done by SRO</span></th>
+                            <th colspan="2" class="text-center"><span class="badge bg-primary">QC done by DR</span></th>
+                            <th colspan="2" class="text-center"><span class="badge bg-primary">QC done by DIGR</span></th>
+                          </tr>
+                          <tr>
+                            <th class="text-center"><span class="badge bg-success">QC Given</span></th>
+                            <th class="text-center"><span class="badge bg-success">QC Approved</span></th>
+                            <th class="text-center"><span class="badge bg-success">QC Given</span></th>
+                            <th class="text-center"><span class="badge bg-success">QC Approved</span></th>
+                            <th class="text-center"><span class="badge bg-success">QC Given</span></th>
+                            <th class="text-center"><span class="badge bg-success">QC Approved</span></th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {% for z in zone_stats %}
+                            <tr>
+                              <td>{{ z.zone_name }}</td>
+                              <td>{{ z.sro_given }}</td>
+                              <td>{{ z.sro_approved }}</td>
+                              <td>{{ z.dr_given }}</td>
+                              <td>{{ z.dr_approved }}</td>
+                              <td>{{ z.digr_given }}</td>
+                              <td>{{ z.digr_approved }}</td>
+                            </tr>
+                          {% empty %}
+                            <tr>
+                              <td class="text-center bg-warning" colspan="7">No data found.</td>
+                            </tr>
+                          {% endfor %}
+                        </tbody>
+                        <tfoot class="table-info position-sticky bottom-0">
+                          <tr>
+                            <th class="text-end">Total:</th>
+                            <th>{{zone_totals.sro_given}}</th>
+                            <th>{{zone_totals.sro_approved}}</th>
+                            <th>{{zone_totals.dr_given}}</th>
+                            <th>{{zone_totals.dr_approved}}</th>
+                            <th>{{zone_totals.digr_given}}</th>
+                            <th>{{zone_totals.digr_approved}}</th>
+
+                          </tr>
+                        </tfoot>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock content %}
+
+
